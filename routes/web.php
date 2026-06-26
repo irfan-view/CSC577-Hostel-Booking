@@ -68,6 +68,7 @@ Route::get('/logout', function () {
 Route::prefix('student')->group(function () {
 
     // --- STUDENT DASHBOARD CENTRAL CONSOLE ---
+    // --- STUDENT DASHBOARD CENTRAL CONSOLE ---
     Route::get('/dashboard', function () {
         if (!Session::has('user_id') || Session::get('role') !== 'student') {
             return redirect('/')->withErrors(['error' => 'Unauthorized entry points.']);
@@ -86,7 +87,11 @@ Route::prefix('student')->group(function () {
         $occupiedRoomsCount = DB::table('rooms')->where('currentOccupancy', '>=', 4)->count();
         $availableRoomsCount = $totalRoomsCount - $occupiedRoomsCount;
 
-        return view('dashboard', compact('activeBooking', 'totalRoomsCount', 'availableRoomsCount'));
+        // NEW FIX: Dynamic live counter to sync the dashboard card with your database rows
+        $announcementsCount = DB::table('announcements')->count();
+
+        // Pass $announcementsCount safely into your compact parameters array context
+        return view('dashboard', compact('activeBooking', 'totalRoomsCount', 'availableRoomsCount', 'announcementsCount'));
     });
 
     // --- STUDENT BED INVENTORY MATRIX SHOWCASE ---

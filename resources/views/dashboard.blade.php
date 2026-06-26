@@ -80,10 +80,12 @@
 
             <!-- Announcements Card -->
             <div class="bg-white border border-amber-100 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 relative overflow-hidden">
-                <div class="absolute right-4 top-4 text-amber-500 bg-amber-50/60 p-1.5 rounded-xl border border-amber-100/30">📣</div>
-                <div class="text-2xl font-black text-slate-800 mt-2">4</div>
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Announcements</div>
-            </div>
+    <div class="absolute right-4 top-4 text-amber-500 bg-amber-50/60 p-1.5 rounded-xl border border-amber-100/30">📣</div>
+    
+    <div class="text-2xl font-black text-slate-800 mt-2">{{ $announcementsCount ?? 0 }}</div>
+    
+    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Announcements</div>
+</div>
 
             <!-- Kasa Total Rooms Card -->
             <div class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex flex-col justify-between h-28 relative overflow-hidden">
