@@ -70,7 +70,6 @@ Route::get('/insert-test-admins', function () {
             'userID' => 'ADMIN002',
             'userName' => 'mohamad zul amri',
             'passwordHash' => Hash::make('Admin@123'),
-            'accountStatus' => 'Active',
             'strikeCount' => 0,
             'created_at' => now(),
             'updated_at' => now()
@@ -79,7 +78,6 @@ Route::get('/insert-test-admins', function () {
             'userID' => 'ADMIN003',
             'userName' => 'muhammad nabil danish',
             'passwordHash' => Hash::make('Admin@123'),
-            'accountStatus' => 'Active',
             'strikeCount' => 0,
             'created_at' => now(),
             'updated_at' => now()
@@ -92,7 +90,6 @@ Route::get('/insert-test-admins', function () {
             [
                 'userName' => $admin['userName'],
                 'passwordHash' => $admin['passwordHash'],
-                'accountStatus' => $admin['accountStatus'],
                 'strikeCount' => $admin['strikeCount'],
                 'created_at' => $admin['created_at'],
                 'updated_at' => $admin['updated_at']
@@ -114,7 +111,6 @@ Route::get('/insert-test-students', function () {
             'program' => 'CS270',
             'semester' => 4,
             'passwordHash' => Hash::make('Student@123'),
-            'accountStatus' => 'Active',
             'strikeCount' => 0,
         ],
         [
@@ -124,7 +120,6 @@ Route::get('/insert-test-students', function () {
             'program' => 'CS270',
             'semester' => 4,
             'passwordHash' => Hash::make('Student@123'),
-            'accountStatus' => 'Active',
             'strikeCount' => 0,
         ],
         [
@@ -134,7 +129,6 @@ Route::get('/insert-test-students', function () {
             'program' => 'CS270',
             'semester' => 4,
             'passwordHash' => Hash::make('Student@123'),
-            'accountStatus' => 'Active',
             'strikeCount' => 0,
         ]
     ];
@@ -151,7 +145,6 @@ Route::get('/insert-test-students', function () {
     $femaleNames = ['Siti Nurhaliza', 'Nur Aisha Amira', 'Farah Nabilah', 'Anis Syazwani', 'Puteri Balqis', 'Nurul Izzah', 'Fatin Hamimah', 'Alya Maisarah'];
     
     $programs = ['CS230', 'CS264', 'CS267', 'CS270'];
-    $statuses = ['Active', 'Active', 'Active', 'Suspended'];
 
     for ($i = 1; $i <= 17; $i++) {
         $gender = ($i % 2 === 0) ? 'Female' : 'Male';
@@ -171,8 +164,6 @@ Route::get('/insert-test-students', function () {
         elseif ($randStrike > 70) { $strikeCount = 2; }  
         elseif ($randStrike > 50) { $strikeCount = 1; }  
 
-        $accountStatus = ($strikeCount >= 3) ? 'Suspended' : $statuses[array_rand($statuses)];
-
         DB::table('hostel_users')->updateOrInsert(
             ['userID' => $userID],
             [
@@ -181,7 +172,6 @@ Route::get('/insert-test-students', function () {
                 'program' => $program,
                 'semester' => $semester,
                 'passwordHash' => Hash::make('Student@123'),
-                'accountStatus' => $accountStatus,
                 'strikeCount' => $strikeCount,
                 'created_at' => now(),
                 'updated_at' => now()
