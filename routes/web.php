@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 /*
@@ -40,7 +41,7 @@ Route::post('/login', function (Request $request) {
     // 2. STANDARD DATABASE AUTHENTICATION FLOW
     $user = DB::table('hostel_users')->where('userID', $userID)->first();
 
-    if ($user && isset($user->passwordHash) && Illuminate\Support\Facades\Hash::check($password, $user->passwordHash)) {
+    if ($user && isset($user->passwordHash) && Hash::check($password, $user->passwordHash)) {
         
         $role = (str_starts_with(strtoupper($user->userID), 'ADMIN')) ? 'admin' : 'student';
 
@@ -61,13 +62,71 @@ Route::get('/logout', function () {
     return redirect('/');
 });
 
+// --- TEMPORARY AUTOMATED DATA INJECTION SEEDER ---
+Route::get('/insert-test-students', function () {
+    $students = [
+        [
+            'userID' => '2024236368',
+            'userName' => 'mohamad izzrul emir',
+            'passwordHash' => Hash::make('Student@123'),
+            'accountStatus' => 'Active',
+            'strikeCount' => 0,
+            'created_at' => now(),
+            'updated_at' => now()
+        ],
+        [
+            'userID' => '2024690002',
+            'userName' => 'harzan qayyum',
+            'passwordHash' => Hash::make('Student@123'),
+            'accountStatus' => 'Active',
+            'strikeCount' => 0,
+            'created_at' => now(),
+            'updated_at' => now()
+        ],
+        [
+            'userID' => '2024680092',
+            'userName' => 'meor muhammad syarif',
+            'passwordHash' => Hash::make('Student@123'),
+            'accountStatus' => 'Active',
+            'strikeCount' => 0,
+            'created_at' => now(),
+            'updated_at' => now()
+        ],
+        [
+            'userID' => '2024881234',
+            'userName' => 'siti nurhaliza binti rasheed',
+            'passwordHash' => Hash::make('Student@123'),
+            'accountStatus' => 'Active',
+            'strikeCount' => 0,
+            'created_at' => now(),
+            'updated_at' => now()
+        ],
+        [
+            'userID' => '2024114567',
+            'userName' => 'nur aisha amira binti zaidi',
+            'passwordHash' => Hash::make('Student@123'),
+            'accountStatus' => 'Active',
+            'strikeCount' => 0,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]
+    ];
+
+    foreach ($students as $student) {
+        if (!DB::table('hostel_users')->where('userID', $student['userID'])->exists()) {
+            DB::table('hostel_users')->insert($student);
+        }
+    }
+
+    return "Varying group student test records injected cleanly into 'hostel_users' database ledger!";
+});
+
 
 // =========================================================================
 // 🏢 MASTER STUDENT PORTAL ROUTE DECK (PREFIX: /student)
 // =========================================================================
 Route::prefix('student')->group(function () {
 
-    // --- STUDENT DASHBOARD CENTRAL CONSOLE ---
     // --- STUDENT DASHBOARD CENTRAL CONSOLE ---
     Route::get('/dashboard', function () {
         if (!Session::has('user_id') || Session::get('role') !== 'student') {
@@ -86,12 +145,11 @@ Route::prefix('student')->group(function () {
         $totalRoomsCount = DB::table('rooms')->count();
         $occupiedRoomsCount = DB::table('rooms')->where('currentOccupancy', '>=', 4)->count();
         $availableRoomsCount = $totalRoomsCount - $occupiedRoomsCount;
-
-        // NEW FIX: Dynamic live counter to sync the dashboard card with your database rows
+        
+        // Dynamic active announcement row counting fix
         $announcementsCount = DB::table('announcements')->count();
 
-        // Pass $announcementsCount safely into your compact parameters array context
-        return view('dashboard', compact('activeBooking', 'totalRoomsCount', 'availableRoomsCount', 'announcementsCount'));
+        return view('dashboard', compact('activeBooking', 'totalRoomsCount', 'occupiedRoomsCount', 'availableRoomsCount', 'announcementsCount'));
     });
 
     // --- STUDENT BED INVENTORY MATRIX SHOWCASE ---
@@ -199,7 +257,6 @@ Route::prefix('student')->group(function () {
         }
 
         $bookingID = $request->input('bookingID');
-
         $record = DB::table('reservations')->where('logID', $bookingID)->first();
 
         if ($record) {
@@ -232,7 +289,6 @@ Route::prefix('student')->group(function () {
             return redirect('/')->withErrors(['error' => 'Unauthorized access. Please log in.']);
         }
 
-        // Pull dynamic alerts directly from database query stream to resolve undefined variable error
         $announcements = DB::table('announcements')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -260,7 +316,7 @@ Route::prefix('admin')->group(function () {
         // 2. Count how many rooms have hit their maximum occupancy limit (4 beds filled)
         $occupiedRooms = DB::table('rooms')->where('currentOccupancy', '>=', 4)->count();
         
-        // 3. Total active reservations currently secured by students (Expected as $activeBookings on line 99)
+        // 3. Total active reservations currently secured by students
         $activeBookings = DB::table('reservations')->where('bookingStatus', 'Confirmed')->count();
 
         // 4. Calculate available remaining bed slots across the entire layout matrix pool
@@ -270,7 +326,6 @@ Route::prefix('admin')->group(function () {
         // Safety bound: prevent negative values
         if ($availableRooms < 0) { $availableRooms = 0; }
 
-        // Bind variables cleanly using matching key alignments
         return view('admin_dashboard', compact('availableRooms', 'occupiedRooms', 'activeBookings', 'totalRooms'));
     });
 
@@ -284,13 +339,12 @@ Route::prefix('admin')->group(function () {
         return view('admin_rooms', compact('rooms'));
     });
 
-    // --- ADMIN ROOM VACANCY MONITOR (UNIFIED CARDS SLIDER FILTER VIEW) ---
+    // --- ADMIN ROOM VACANCY MONITOR ---
     Route::get('/vacancy', function () {
         if (!Session::has('user_id') || Session::get('role') !== 'admin') {
             return redirect('/')->withErrors(['error' => 'Access Denied. Administrators only.']);
         }
 
-        // Fetch complete room register list so clientside dynamic rows slide accurately
         $rooms = DB::table('rooms')->orderBy('roomID', 'asc')->get();
         return view('admin_vacancy', compact('rooms'));
     });
@@ -304,7 +358,6 @@ Route::prefix('admin')->group(function () {
         $roomID = $request->input('roomID');
         $currentStatus = $request->input('current_status'); // 'occupied' or 'vacant'
 
-        // Compute inversion targets updates logic cleanly
         $targetOccupancy = ($currentStatus === 'vacant') ? 4 : 0;
 
         DB::table('rooms')->where('roomID', $roomID)->update([
@@ -321,7 +374,6 @@ Route::prefix('admin')->group(function () {
             return redirect('/')->withErrors(['error' => 'Access Denied. Administrators only.']);
         }
 
-        // Inner join query compilation connecting allocation records with descriptive username cards
         $records = DB::table('reservations')
             ->join('hostel_users', 'reservations.userID', '=', 'hostel_users.userID')
             ->select('reservations.*', 'hostel_users.userName')
