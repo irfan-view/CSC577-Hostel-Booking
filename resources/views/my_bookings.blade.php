@@ -21,17 +21,13 @@
                     <div>
                         <h1 class="text-sm font-bold tracking-wide">UiTM KT Hostel</h1>
                         <p class="text-[10px] text-purple-200/80 font-medium">
-                            @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
-                                Kolej Sutera (Female)
-                            @else
-                                Kolej Kasa (Male)
-                            @endif
+                            {{ strcasecmp($userProfile->gender ?? 'Male', 'Female') === 0 ? 'Kolej Sutera (Female)' : 'Kolej Kasa (Male)' }}
                         </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-5">
                     <div class="flex items-center gap-3">
-                        <div class="w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse"></div>
+                        <div class="w-2.5 h-2.5 rounded-full {{ ($userProfile->strikeCount ?? 0) >= 3 ? 'bg-rose-400' : 'bg-emerald-400' }} animate-pulse"></div>
                         <div class="text-right">
                             <span class="font-bold text-white text-sm block capitalize leading-snug">
                                 {{ str_replace('_', ' ', $userProfile->userName ?? 'Hostel Student') }}
@@ -53,7 +49,7 @@
                 <a href="/student/rooms" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
                     <span>🛏️</span> Book Room
                 </a>
-                <a href="/student/bookings" class="text-white border-b-2 border-white pb-2 flex items-center gap-2 opacity-100">
+                <a href="/student/bookings" class="text-white border-b-2 border-white pb-2 flex items-center gap-2 opacity-100 font-bold">
                     <span>📅</span> My Bookings
                 </a>
                 <a href="/student/eligibility" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
@@ -89,16 +85,12 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-sm font-bold text-slate-900">
-                            @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
-                                Kolej Sutera · Room {{ $booking->roomTargetID }}
-                            @else
-                                Kolej Kasa · Room {{ $booking->roomTargetID }}
-                            @endif
+                            {{ strcasecmp($userProfile->gender ?? 'Male', 'Female') === 0 ? 'Kolej Sutera' : 'Kolej Kasa' }} · Room {{ $booking->roomTargetID }}
                         </h3>
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">{{ $booking->securedWordLog }} BOOKING</p>
                     </div>
                     <span class="text-[10px] uppercase font-extrabold border px-2.5 py-0.5 rounded-md shadow-sm bg-emerald-50 text-emerald-600 border-emerald-100">
-                        ✓ Confirmed
+                        ✓ {{ $booking->bookingStatus ?? 'Confirmed' }}
                     </span>
                 </div>
 
@@ -123,7 +115,7 @@
                 </div>
 
                 <!-- Cancel Booking Workflow -->
-                <form action="/student/cancel-booking" method="POST" onsubmit="return confirm('Are you absolutely sure you want to cancel this booking slot?');" class="pt-2">
+                <form action="/student/cancel-booking" method="POST" onsubmit="return confirm('Are you absolutely sure you want to cancel this booking slot? This action will free up bed spaces instantly.');" class="pt-2">
                     @csrf
                     <input type="hidden" name="bookingID" value="{{ $booking->logID }}">
                     <button type="submit" class="w-full border border-rose-200 hover:bg-rose-50 text-rose-600 font-bold text-xs py-3 rounded-2xl transition flex items-center justify-center gap-1.5">
@@ -133,7 +125,7 @@
 
             </div>
         @else
-            <!-- Empty State -->
+            <!-- Empty State Fallback Screen -->
             <div class="bg-white rounded-3xl border border-slate-200/60 p-12 text-center max-w-4xl">
                 <div class="h-14 w-14 bg-slate-50 border border-slate-200/60 rounded-2xl flex items-center justify-center text-2xl shadow-sm mx-auto mb-4">
                     📅
@@ -142,9 +134,19 @@
                 <p class="text-xs text-slate-400 max-w-xs mx-auto mt-1 font-medium leading-relaxed">
                     You have not completed any residential room allocations for this active semester session cycle.
                 </p>
-                <a href="/student/rooms" class="mt-5 inline-flex px-5 py-2.5 bg-[#5B06B2] hover:bg-[#4A058F] text-white rounded-2xl text-[11px] font-bold shadow-sm transition">
-                    Book a Room Now
-                </a>
+                
+                <!-- SECURITY PRIVILEGE PROTECTION LAYER CHECK -->
+                <div class="mt-5 flex justify-center">
+                    @if(($userProfile->strikeCount ?? 0) >= 3)
+                        <a href="/student/eligibility" class="inline-flex items-center gap-2 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-[11px] font-bold shadow-sm transition tracking-wide">
+                            ⚠️ View Account Restrictions
+                        </a>
+                    @else
+                        <a href="/student/rooms" class="inline-flex px-5 py-2.5 bg-[#5B06B2] hover:bg-[#4A058F] text-white rounded-2xl text-[11px] font-bold shadow-sm transition">
+                            Book a Room Now
+                        </a>
+                    @endif
+                </div>
             </div>
         @endif
 

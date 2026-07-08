@@ -18,7 +18,9 @@
                     </div>
                     <div>
                         <h1 class="text-sm font-bold tracking-wide">UiTM KT Hostel</h1>
-                        <p class="text-[10px] text-purple-200/80 font-medium">Kolej Kasa (Male)</p>
+<p class="text-[10px] text-purple-200/80 font-medium">
+    {{ strcasecmp($userProfile->gender, 'Female') === 0 ? 'Kolej Sutera (Female)' : 'Kolej Kasa (Male)' }}
+</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-5">
@@ -63,7 +65,9 @@
 
         <div>
             <h2 class="text-xl font-bold text-slate-800">Browse Rooms</h2>
-            <p class="text-xs text-slate-400 font-medium mt-0.5">Kolej Kasa (Male) — Select a room to book</p>
+            <p class="text-xs text-slate-400 font-medium mt-0.5">
+                {{ strcasecmp($userProfile->gender, 'Female') === 0 ? 'Kolej Sutera (Female)' : 'Kolej Kasa (Male)' }} — Select a room to book
+            </p>
         </div>
 
         <!-- Global Action Flash Responses -->

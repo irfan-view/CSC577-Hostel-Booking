@@ -3,96 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UiTM KT Hostel Booking System - Student Dashboard</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Dashboard - Student Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen">
 
-    <!-- =========================================================================
-         🏢 TOP NAVIGATION HEADER BAR BLOCK (SYNCED TO MATCH THEME COLOR #5B06B2)
-         ========================================================================= -->
     <header class="bg-[#5B06B2] text-white shadow-sm sticky top-0 z-50">
         <div class="max-w-[1600px] mx-auto px-6">
             <div class="flex justify-between items-center py-4 border-b border-purple-500/30">
-                <!-- Branding Placement -->
                 <div class="flex items-center gap-3">
                     <div class="border-2 border-white/80 rounded-xl p-1.5 flex items-center justify-center">
                         <span class="text-sm font-semibold tracking-wider">🏢</span>
                     </div>
                     <div>
                         <h1 class="text-sm font-bold tracking-wide">UiTM KT Hostel</h1>
-                        
-                        <!-- DYNAMIC GENDER HOSTEL SUBTITLE -->
                         <p class="text-[10px] text-purple-200/80 font-medium">
-                            @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
-                                Kolej Sutera (Female)
-                            @else
-                                Kolej Kasa (Male)
-                            @endif
+                            {{ strcasecmp($userProfile->gender ?? 'Male', 'Female') === 0 ? 'Kolej Sutera (Female)' : 'Kolej Kasa (Male)' }}
                         </p>
                     </div>
                 </div>
-
-                <!-- Dynamic User Account Profile Badge Details -->
                 <div class="flex items-center gap-5">
-                    <div class="flex items-center gap-3">
-                        <div class="w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse"></div>
+                    <div class="flex items-center gap-2">
                         <div class="text-right">
-                            <span class="font-bold text-white text-sm block capitalize leading-snug">
-                                {{ str_replace('_', ' ', $userProfile->userName ?? 'Hostel Student') }}
-                            </span>
-                            <span class="text-[10px] font-mono text-purple-200 tracking-wider block">
-                                {{ $userProfile->userID ?? 'N/A' }}
-                            </span>
+                            <span class="font-bold text-white text-xs block tracking-wide capitalize">{{ $userProfile->userName ?? 'Student Account' }}</span>
+                            <span class="text-[9px] font-mono text-purple-200 tracking-wider block uppercase">{{ $userProfile->userID ?? Session::get('user_id') }}</span>
                         </div>
                     </div>
-                    <!-- Logout Control -->
-                    <a href="/logout" class="text-purple-200 hover:text-white transition p-1" title="Sign Out Ecosystem">
-                        ➔
-                    </a>
+                    <a href="/logout" class="text-purple-200 hover:text-white transition p-1">➔</a>
                 </div>
             </div>
-        </div>
 
-        <!-- Secondary Core Tab Panel Matrix -->
-        <div class="max-w-[1600px] mx-auto px-6">
             <nav class="flex gap-6 text-xs font-semibold pt-3 pb-1">
-                <a href="/student/dashboard" class="text-white border-b-2 border-white pb-2 flex items-center gap-2 opacity-100">
-                    <span>🏠</span> Dashboard
-                </a>
-                <a href="/student/rooms" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-                    <span>🛏️</span> Book Room
-                </a>
-                <a href="/student/bookings" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-                    <span>📅</span> My Bookings
-                </a>
-                <a href="/student/eligibility" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-                    <span>📋</span> Eligibility
-                </a>
-                <a href="/student/announcements" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-                    <span>📢</span> Announcements
-                </a>
+                <a href="/student/dashboard" class="text-white border-b-2 border-white pb-2 flex items-center gap-1.5 opacity-100 font-bold">🏠 Dashboard</a>
+                <a href="/student/rooms" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-1.5 opacity-80">🗺️ Book Room</a>
+                <a href="/student/bookings" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-1.5 opacity-80">🎫 My Bookings</a>
+                <a href="/student/eligibility" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-1.5 opacity-80">📋 Eligibility</a>
+                <a href="/student/announcements" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-1.5 opacity-80">📢 Announcements</a>
             </nav>
         </div>
     </header>
 
-    <!-- =========================================================================
-         📊 MAIN CENTRAL CONTENT LAYOUT CONSOLE
-         ========================================================================= -->
     <main class="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
-        
-        <!-- Welcome Greeting Panel Display (Underscore Filter Applied) -->
-        <div>
-            <h2 class="text-xl font-bold text-slate-800 tracking-tight">
-                Welcome back, <span class="capitalize text-[#5B06B2]">{{ explode(' ', trim(str_replace('_', ' ', $userProfile->userName ?? 'Student')))[0] }}</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-0.5 font-medium">
-                Semester March 2026 – August 2026 • UiTM Kampus Kuala Terengganu
-            </p>
+
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">Welcome back, <span class="capitalize text-[#5B06B2]">{{ explode(' ', trim($userProfile->userName ?? 'Student'))[0] }}</span></h2>
+                <p class="text-xs text-slate-400 font-medium mt-0.5">Semester March 2026 – August 2026 • UiTM Kampus Kuala Terengganu</p>
+            </div>
+            <span class="text-xs font-bold text-slate-500 bg-white border border-slate-200/60 rounded-xl px-3 py-1.5 shadow-sm uppercase">
+                Part {{ $userProfile->semester ?? 1 }} • {{ $userProfile->program ?? 'CS230' }}
+            </span>
         </div>
 
-        <!-- Feedback Alerts Interceptor -->
         @if(session('success'))
             <div class="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-semibold rounded-xl px-4 py-3 shadow-sm">
                 <span>✅</span> {{ session('success') }}
@@ -101,167 +63,126 @@
 
         @if($errors->any())
             <div class="bg-rose-50 border border-rose-100 text-rose-600 text-xs font-semibold rounded-xl px-4 py-3 shadow-sm">
-                @foreach ($errors->all() as $error)
-                    <div class="flex items-center gap-2"><span>⚠️</span> {{ $error }}</div>
-                @endforeach
+                <span>⚠️</span> {{ $errors->first() }}
             </div>
         @endif
 
-        <!-- =========================================================================
-             📈 ANALYTICS CORE OVERVIEW ROW METRIC MATRIX CARD GRID
-             ========================================================================= -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
-            <!-- Card 1: Available Rooms Layout Balance -->
-            <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm flex flex-col justify-between h-28 relative overflow-hidden group hover:shadow-md transition duration-200">
-                <div class="absolute right-4 top-4 text-emerald-50 bg-emerald-500/10 p-1.5 rounded-xl border border-emerald-100/30 group-hover:scale-110 transition">🛏️</div>
-                <div class="text-2xl font-black text-slate-800 mt-2 font-mono tracking-wide">{{ $availableRoomsCount ?? 0 }}</div>
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Available Rooms</div>
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wide">Available Rooms</span>
+                    <span class="text-2xl font-black text-slate-800 mt-1 block font-mono">{{ $availableRoomsCount ?? 0 }}</span>
+                </div>
+                <div class="bg-emerald-50 text-emerald-600 p-2.5 rounded-xl text-sm">🛏️</div>
             </div>
 
-            <!-- Card 2: My Personal Bookings Count Monitoring -->
-            <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm flex flex-col justify-between h-28 relative overflow-hidden group hover:shadow-md transition duration-200">
-                <div class="absolute right-4 top-4 text-purple-50 bg-[#5B06B2]/10 p-1.5 rounded-xl border border-purple-100/30 group-hover:scale-110 transition">📅</div>
-                <div class="text-2xl font-black text-slate-800 mt-2 font-mono tracking-wide">{{ $activeBooking ? 1 : 0 }}</div>
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">My Bookings</div>
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wide">Occupied Rooms</span>
+                    <span class="text-2xl font-black text-slate-800 mt-1 block font-mono">{{ $occupiedRoomsCount ?? 0 }}</span>
+                </div>
+                <div class="bg-purple-50 text-[#5B06B2] p-2.5 rounded-xl text-sm">👥</div>
             </div>
 
-            <!-- Card 3: Dynamic Synchronized Bulletins Tracker -->
-            <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm flex flex-col justify-between h-28 relative overflow-hidden group hover:shadow-md transition duration-200">
-                <div class="absolute right-4 top-4 text-amber-50 bg-amber-500/10 p-1.5 rounded-xl border border-amber-100/30 group-hover:scale-110 transition">📢</div>
-                <div class="text-2xl font-black text-slate-800 mt-2 font-mono tracking-wide">{{ $announcementsCount ?? 0 }}</div>
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Announcements</div>
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wide">Active Bookings</span>
+                    <span class="text-2xl font-black text-slate-800 mt-1 block font-mono">{{ $activeBooking ? '1' : '0' }}</span>
+                </div>
+                <div class="bg-blue-50 text-blue-600 p-2.5 rounded-xl text-sm">🎫</div>
             </div>
 
-            <!-- Card 4: Total Physical Structure Counter Block -->
-            <div class="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-sm flex flex-col justify-between h-28 relative overflow-hidden group hover:shadow-md transition duration-200">
-                <div class="absolute right-4 top-4 text-blue-50 bg-blue-500/10 p-1.5 rounded-xl border border-blue-100/30 group-hover:scale-110 transition">🏢</div>
-                <div class="text-2xl font-black text-slate-800 mt-2 font-mono tracking-wide">{{ $totalRoomsCount ?? 0 }}</div>
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Total System Rooms</div>
+            <div class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wide">System Bulletins</span>
+                    <span class="text-2xl font-black text-slate-800 mt-1 block font-mono">{{ $announcementsCount ?? 0 }}</span>
+                </div>
+                <div class="bg-amber-50 text-amber-600 p-2.5 rounded-xl text-sm">📢</div>
             </div>
 
         </div>
 
-        <!-- =========================================================================
-             🛡️ LOGICAL ACTIVE ALLOCATION TRANSACTION CONSOLE MONITOR
-             ========================================================================= -->
-        <div class="bg-white border border-slate-200/60 rounded-3xl shadow-sm p-6">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-6 flex items-center gap-2">
-                <span>🛡️</span> Allocation Status Ledger
-            </h3>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm space-y-6 flex flex-col justify-between">
+                <div>
+                    <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
+                        <span class="text-[#5B06B2] text-sm">🛡️</span>
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Allocation Status Ledger</h3>
+                    </div>
 
-            @if($activeBooking)
-                <!-- State Alpha: Room Already Confirmed Secure -->
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between p-5 bg-purple-50/60 rounded-2xl border border-purple-100/50 gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="h-12 w-12 bg-[#5B06B2] rounded-xl flex items-center justify-center text-xl text-white shadow-md">
-                            🎯
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
-                            <div>
-                                <div class="text-xs font-bold text-purple-900 uppercase tracking-wide">Active Allocation Confirmed</div>
-                                <h4 class="text-base font-bold text-slate-800 mt-0.5 font-mono tracking-wide">
-                                    @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
-                                        Kolej Sutera · Room {{ $activeBooking->roomTargetID }}
-                                    @else
-                                        Kolej Kasa · Room {{ $activeBooking->roomTargetID }}
-                                    @endif
-                                </h4>
-                                <p class="text-[11px] text-slate-500 font-medium mt-0.5">
-                                    Arrangement: <span class="badge uppercase bg-purple-200/50 px-1.5 py-0.5 rounded text-[#5B06B2] font-bold text-[10px]">{{ $activeBooking->securedWordLog }} BOOKING</span>
-                                </p>
+                    <div class="mt-6">
+                        @if($activeBooking)
+                            <div class="border border-emerald-100 bg-emerald-50/20 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:flex-wrap sm:items-center gap-4">
+                                <div class="space-y-1">
+                                    <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 font-bold rounded-lg text-[10px] uppercase">Active Confirmation Pass</span>
+                                    <h4 class="text-sm font-bold text-slate-800 pt-1">Room Secure Token: <span class="font-mono text-[#5B06B2]">{{ $activeBooking->roomTargetID }}</span></h4>
+                                    <p class="text-xs text-slate-400">Transaction ID: <span class="font-mono font-bold">{{ $activeBooking->logID }}</span> • Secured Allocation via {{ $activeBooking->securedWordLog }} track</p>
+                                </div>
+                                <a href="/student/bookings" class="bg-[#5B06B2] hover:bg-purple-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-sm w-full sm:w-auto text-center">
+                                    View Receipt Pass
+                                </a>
                             </div>
-                            
-                            <!-- CLEAN FIXED DATE LAYOUT GRID (WITH ROBUST ERROR FALLBACK) -->
-                            <div class="flex flex-row md:flex-col justify-between md:justify-center text-left border-t md:border-t-0 md:border-l border-slate-200/60 pt-2 md:pt-0 md:pl-8">
-                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Booking ID</div>
-                                <div class="text-xs font-mono font-bold text-slate-700">{{ $activeBooking->logID }}</div>
+                        @else
+                            <div class="text-center py-8 space-y-4">
+                                <div class="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-lg mx-auto">🛏️</div>
+                                <div class="space-y-1 max-w-sm mx-auto">
+                                    <h4 class="text-xs font-bold text-slate-800 uppercase">No active room reservation secured</h4>
+                                    <p class="text-[11px] text-slate-400 font-medium">You have not registered a residential room allocation footprint for the current academic semester cycle session.</p>
+                                </div>
                                 
-                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-1.5 hidden md:block">Booked On</div>
-                                <div class="text-xs font-mono font-bold text-slate-700 hidden md:block">
-                                    @if(empty($activeBooking->created_at) || strlen($activeBooking->created_at) < 6 || str_contains($activeBooking->created_at, '0000'))
-                                        08 July 2026
+                                <div class="pt-2 flex justify-center">
+                                    @if(($userProfile->strikeCount ?? 0) >= 3)
+                                        <a href="/student/eligibility" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
+                                            ⚠️ View Account Restrictions
+                                        </a>
                                     @else
-                                        {{ date('d F Y', strtotime($activeBooking->created_at)) }}
+                                        <a href="/student/rooms" class="bg-[#5B06B2] hover:bg-purple-700 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
+                                            🚀 Browse Available Rooms
+                                        </a>
                                     @endif
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Cancel Action Form Interceptor -->
-                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto self-center">
-                        <form action="/student/cancel-booking" method="POST" onsubmit="return confirm('Are you absolutely certain you want to cancel this residential booking slot?');" class="w-full sm:w-auto">
-                            @csrf
-                            <input type="hidden" name="bookingID" value="{{ $activeBooking->logID }}">
-                            <button type="submit" class="w-full text-center px-4 py-2.5 border border-rose-200 hover:bg-rose-50 text-rose-600 rounded-xl text-xs font-bold transition">
-                                ✕ Cancel Booking
-                            </button>
-                        </form>
-                        <a href="/student/bookings" class="w-full text-center px-4 py-2.5 bg-[#5B06B2] hover:bg-[#4A058F] text-white rounded-xl text-xs font-bold transition shadow-sm">
-                            View Receipt Details
-                        </a>
+                        @endif
                     </div>
                 </div>
-            @else
-                <!-- State Beta: Empty Workspace Index Placeholder -->
-                <div class="text-center py-10 flex flex-col items-center justify-center">
-                    <div class="h-14 w-14 bg-slate-50 border border-slate-200/60 rounded-2xl flex items-center justify-center text-2xl shadow-sm mb-4">
-                        🛏️
-                    </div>
-                    <h4 class="text-sm font-bold text-slate-700">No active room reservation secure</h4>
-                    <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1 font-medium leading-relaxed">
-                        You have not secured a residential room allocation footprint for the current academic semester session cycle interface.
-                    </p>
-                    <a href="/student/rooms" class="mt-5 px-5 py-2.5 bg-[#5B06B2] hover:bg-[#4A058F] text-white rounded-2xl text-[11px] font-bold shadow-sm hover:shadow transition flex items-center gap-2">
-                        <span>🚀</span> Browse Available Rooms
-                    </a>
-                </div>
-            @endif
-        </div>
-
-        <!-- =========================================================================
-             📢 LATEST ANNOUNCEMENTS BOARD FEED
-             ========================================================================= -->
-        <div class="space-y-3">
-            <div class="flex justify-between items-center">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                    <span>📢</span> Latest Announcements
-                </h3>
-                <a href="/student/announcements" class="text-xs font-bold text-[#5B06B2] hover:underline">View all</a>
             </div>
 
-            <div class="bg-white border border-slate-200/60 rounded-3xl p-4 shadow-sm divide-y divide-slate-100">
-                @php
-                    $latestBulletins = DB::table('announcements')->orderBy('created_at', 'desc')->take(3)->get();
-                @endphp
+            <div class="bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm space-y-4">
+                <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-amber-500 text-sm">📢</span>
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Latest Bulletins</h3>
+                    </div>
+                    <a href="/student/announcements" class="text-[11px] font-bold text-[#5B06B2] hover:underline">View All</a>
+                </div>
 
-                @forelse($latestBulletins as $notice)
-                    <div class="py-4 first:pt-1 last:pb-1 flex flex-col space-y-1.5">
-                        <div class="flex items-center justify-between gap-4">
-                            <h4 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                                @if($notice->is_urgent)
-                                    <span class="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse"></span>
-                                    <span class="text-rose-600 font-extrabold uppercase text-[9px] bg-rose-50 border border-rose-100 px-1.5 py-0.5 rounded tracking-wide">Urgent</span>
-                                @else
-                                    <span>📌</span>
+                <div class="space-y-3 overflow-y-auto max-h-[320px] pr-1">
+                    @forelse($announcements as $bulletin)
+                        <div class="p-3 border rounded-xl shadow-2xs transition-all duration-200 hover:border-purple-200
+                            {{ $bulletin->is_urgent ? 'bg-amber-50/40 border-amber-200' : 'bg-slate-50/50 border-slate-100' }}">
+                            <div class="flex justify-between items-start gap-2">
+                                <h4 class="text-xs font-bold text-slate-800 line-clamp-1 leading-snug">{{ $bulletin->title }}</h4>
+                                @if($bulletin->is_urgent)
+                                    <span class="bg-amber-100 text-amber-800 font-bold text-[8px] px-1.5 py-0.5 rounded-md uppercase shrink-0 tracking-wide">Urgent</span>
                                 @endif
-                                <span class="{{ $notice->is_urgent ? 'text-rose-700 font-extrabold' : '' }}">{{ $notice->title }}</span>
-                            </h4>
-                            <span class="text-[10px] font-mono text-slate-400 font-medium">{{ date('Y-m-d', strtotime($notice->created_at)) }}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-normal">{{ $bulletin->body }}</p>
+                            <span class="text-[9px] font-mono text-slate-400 mt-2 block">{{ date('d M Y, h:i A', strtotime($bulletin->created_at)) }}</span>
                         </div>
-                        <p class="text-xs text-slate-500 font-medium leading-relaxed pl-5">
-                            {{ $notice->body }}
-                        </p>
-                    </div>
-                @empty
-                    <div class="text-center py-6 text-xs font-medium text-slate-400 flex flex-col items-center gap-2">
-                        <span>📭</span> No recent administrative announcements published yet.
-                    </div>
-                @endforelse
+                    @empty
+                        <div class="text-center py-12 space-y-2">
+                            <span class="text-xl block">📭</span>
+                            <p class="text-[11px] font-medium text-slate-400">No recent official notices broadcasted.</p>
+                        </div>
+                    @endforelse
+                </div>
             </div>
+
         </div>
 
     </main>
+
 </body>
 </html>

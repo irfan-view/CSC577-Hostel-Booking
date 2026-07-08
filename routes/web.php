@@ -63,7 +63,7 @@ Route::get('/logout', function () {
     return redirect('/');
 });
 
-// --- UPDATED SEEDER ROUTE: SYNCHRONIZED MASTER PASSWORDS FOR ALL ADMINS ---
+// --- SEEDER ROUTE: ADDITIONAL ADMINISTRATORS WITH SYNCHRONIZED MASTER PASSWORDS ---
 Route::get('/insert-test-admins', function () {
     $admins = [
         [
@@ -100,79 +100,96 @@ Route::get('/insert-test-admins', function () {
         );
     }
 
-    return "Database administrative accounts successfully updated! All admins (ADMIN001, ADMIN002, ADMIN003) now share the exact same password: Admin@123";
+    return "Database administrative accounts successfully updated! All admins share password: Admin@123";
 });
 
-// --- TEMPORARY AUTOMATED DATA INJECTION SEEDER ---
+// --- SEEDER ROUTE: GENERATES 20 DIVERSE STUDENT RECORDS ---
 Route::get('/insert-test-students', function () {
-    $students = [
+    // 1. Define core team records explicitly to preserve presentation parameters
+    $coreTeam = [
         [
-            'userID' => '2024236368',
-            'userName' => 'mohamad izzrul emir',
+            'userID' => '2024669856',
+            'userName' => 'Ahmad Irfan',
+            'gender' => 'Male',
+            'program' => 'CS270',
+            'semester' => 4,
             'passwordHash' => Hash::make('Student@123'),
             'accountStatus' => 'Active',
             'strikeCount' => 0,
-            'created_at' => now(),
-            'updated_at' => now()
+        ],
+        [
+            'userID' => '2024236368',
+            'userName' => 'mohamad izzrul emir',
+            'gender' => 'Male',
+            'program' => 'CS270',
+            'semester' => 4,
+            'passwordHash' => Hash::make('Student@123'),
+            'accountStatus' => 'Active',
+            'strikeCount' => 0,
         ],
         [
             'userID' => '2024690002',
             'userName' => 'harzan qayyum',
+            'gender' => 'Male',
+            'program' => 'CS270',
+            'semester' => 4,
             'passwordHash' => Hash::make('Student@123'),
             'accountStatus' => 'Active',
             'strikeCount' => 0,
-            'created_at' => now(),
-            'updated_at' => now()
-        ],
-        [
-            'userID' => '2024881234',
-            'userName' => 'siti nurhaliza binti rasheed',
-            'passwordHash' => Hash::make('Student@123'),
-            'accountStatus' => 'Active',
-            'strikeCount' => 0,
-            'created_at' => now(),
-            'updated_at' => now()
-        ],
-        [
-            'userID' => '2024114567',
-            'userName' => 'nur aisha amira binti zaidi',
-            'passwordHash' => Hash::make('Student@123'),
-            'accountStatus' => 'Active',
-            'strikeCount' => 0,
-            'created_at' => now(),
-            'updated_at' => now()
         ]
     ];
 
-    foreach ($students as $student) {
-        if (!DB::table('hostel_users')->where('userID', $student['userID'])->exists()) {
-            DB::table('hostel_users')->insert($student);
+    foreach ($coreTeam as $member) {
+        DB::table('hostel_users')->updateOrInsert(
+            ['userID' => $member['userID']],
+            array_merge($member, ['created_at' => now(), 'updated_at' => now()])
+        );
+    }
+
+    // 2. Programmatically generate the remaining 17 students to reach a total of 20
+    $maleNames = ['Ahmad Syazwan', 'Muhammad Farhan', 'Khairul Anuar', 'Mohamad Zulhilmi', 'Muhammad Nabil', 'Luqman Hakim', 'Amirul Ashraf', 'Aiman Haziq', 'Wan Muhammad'];
+    $femaleNames = ['Siti Nurhaliza', 'Nur Aisha Amira', 'Farah Nabilah', 'Anis Syazwani', 'Puteri Balqis', 'Nurul Izzah', 'Fatin Hamimah', 'Alya Maisarah'];
+    
+    $programs = ['CS230', 'CS264', 'CS267', 'CS270'];
+    $statuses = ['Active', 'Active', 'Active', 'Suspended'];
+
+    for ($i = 1; $i <= 17; $i++) {
+        $gender = ($i % 2 === 0) ? 'Female' : 'Male';
+        $userName = $gender === 'Male' ? $maleNames[($i % count($maleNames))] . ' bin Ramli' : $femaleNames[($i % count($femaleNames))] . ' binti Roslan';
+        
+        $userID = '2024' . str_pad(rand(100000, 999999), 6, '0', STR_PAD_LEFT);
+        $program = $programs[array_rand($programs)];
+        $semester = rand(1, 5);
+        
+        if ($program === 'CS270' && $semester === 4) {
+            $semester = 3; 
         }
+
+        $randStrike = rand(1, 100);
+        $strikeCount = 0;
+        if ($randStrike > 85) { $strikeCount = 3; }      
+        elseif ($randStrike > 70) { $strikeCount = 2; }  
+        elseif ($randStrike > 50) { $strikeCount = 1; }  
+
+        $accountStatus = ($strikeCount >= 3) ? 'Suspended' : $statuses[array_rand($statuses)];
+
+        DB::table('hostel_users')->updateOrInsert(
+            ['userID' => $userID],
+            [
+                'userName' => strtolower($userName),
+                'gender' => $gender,
+                'program' => $program,
+                'semester' => $semester,
+                'passwordHash' => Hash::make('Student@123'),
+                'accountStatus' => $accountStatus,
+                'strikeCount' => $strikeCount,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        );
     }
 
-    $myId = '2024669856';
-    $hashedPassword = Hash::make('Student@123');
-    $exists = DB::table('hostel_users')->where('userID', $myId)->exists();
-
-    if (!$exists) {
-        DB::table('hostel_users')->insert([
-            'userID' => $myId,
-            'userName' => 'Ahmad Irfan',
-            'passwordHash' => $hashedPassword,
-            'accountStatus' => 'Active',
-            'strikeCount' => 0,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-    } else {
-        DB::table('hostel_users')->where('userID', $myId)->update([
-            'userName' => 'Ahmad Irfan',
-            'passwordHash' => $hashedPassword,
-            'updated_at' => now()
-        ]);
-    }
-
-    return "Database synchronized! Your personal account (2024669856) and team test records are fully updated with password: Student@123";
+    return "Database dataset successfully populated! 20 unique student accounts initialized under 'Student@123'.";
 });
 
 
@@ -190,7 +207,7 @@ Route::prefix('student')->group(function () {
         $userProfile = DB::table('hostel_users')->where('userID', $userId)->first();
 
         if (!$userProfile) {
-            $userProfile = (object)['userID' => $userId, 'userName' => 'Ahmad Irfan'];
+            $userProfile = (object)['userID' => $userId, 'userName' => 'Ahmad Irfan', 'gender' => 'Male', 'strikeCount' => 0];
         }
 
         $activeBooking = DB::table('reservations')
@@ -203,27 +220,54 @@ Route::prefix('student')->group(function () {
         $availableRoomsCount = $totalRoomsCount - $occupiedRoomsCount;
         $announcementsCount = DB::table('announcements')->count();
 
-        return view('dashboard', compact('userProfile', 'activeBooking', 'totalRoomsCount', 'occupiedRoomsCount', 'availableRoomsCount', 'announcementsCount'));
+        // Fetch announcements directly for the dashboard view component
+        $announcements = DB::table('announcements')
+            ->orderBy('is_urgent', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
+        return view('dashboard', compact('userProfile', 'activeBooking', 'totalRoomsCount', 'occupiedRoomsCount', 'availableRoomsCount', 'announcementsCount', 'announcements'));
     });
 
+    // --- SECURE ROOM LOOKUP VIEWPORT (WITH 3-STRIKE DISCIPLINARY GUARD) ---
     Route::get('/rooms', function () {
         if (!Session::has('user_id') || Session::get('role') !== 'student') {
             return redirect('/')->withErrors(['error' => 'Access expired.']);
         }
 
         $userId = Session::get('user_id');
-        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan'];
+        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan', 'gender' => 'Male', 'strikeCount' => 0];
 
-        $rooms = DB::table('rooms')->orderBy('roomID', 'asc')->get();
+        // 🚨 SECURITY PRIVILEGE LOCK GUARD
+        if (($userProfile->strikeCount ?? 0) >= 3) {
+            return redirect('/student/eligibility')->withErrors(['error' => 'Your booking privileges have been locked due to excessive strikes.']);
+        }
+
+        $prefix = (strcasecmp($userProfile->gender, 'Female') === 0) ? 'S' : 'K';
+
+        $rooms = DB::table('rooms')
+            ->where('roomID', 'LIKE', $prefix . '%')
+            ->orderBy('roomID', 'asc')
+            ->get();
+
         return view('rooms', compact('rooms', 'userProfile'));
     });
 
+    // --- SECURE BOOK TRANSACTION ENDPOINT POST GUARD ---
     Route::post('/book', function (Request $request) {
         if (!Session::has('user_id') || Session::get('role') !== 'student') {
             return redirect('/')->withErrors(['error' => 'Access Denied.']);
         }
 
         $userId = Session::get('user_id');
+        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first();
+
+        // 🚨 BACKEND STRIKE POST BLOCKER
+        if ($userProfile && ($userProfile->strikeCount ?? 0) >= 3) {
+            return redirect('/student/eligibility')->withErrors(['error' => 'Action forbidden. Your account is frozen due to excessive strikes.']);
+        }
+
         $roomID = $request->input('roomID');
         $bookingType = $request->input('bookingType', 'solo');
 
@@ -293,7 +337,7 @@ Route::prefix('student')->group(function () {
         }
 
         $userId = Session::get('user_id');
-        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan'];
+        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan', 'gender' => 'Male', 'strikeCount' => 0];
 
         $booking = DB::table('reservations')
             ->where('userID', $userId)
@@ -330,7 +374,7 @@ Route::prefix('student')->group(function () {
         }
 
         $userId = Session::get('user_id');
-        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan'];
+        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan', 'gender' => 'Male', 'strikeCount' => 0];
 
         return view('eligibility', compact('userProfile'));
     });
@@ -341,7 +385,7 @@ Route::prefix('student')->group(function () {
         }
 
         $userId = Session::get('user_id');
-        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan'];
+        $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan', 'gender' => 'Male', 'strikeCount' => 0];
 
         $announcements = DB::table('announcements')->orderBy('created_at', 'desc')->get();
         return view('announcements', compact('announcements', 'userProfile'));
@@ -387,7 +431,6 @@ Route::prefix('admin')->group(function () {
         return view('admin_rooms', compact('rooms', 'adminProfile'));
     });
 
-    // --- ADMIN ROOM BULK RESERVATION OVERRIDE HANDLER ---
     Route::post('/rooms/reserve', function (Request $request) {
         if (!Session::has('user_id') || Session::get('role') !== 'admin') {
             return redirect('/')->withErrors(['error' => 'Action forbidden.']);
@@ -424,7 +467,6 @@ Route::prefix('admin')->group(function () {
         return redirect()->back()->with('success', $msg);
     });
 
-    // --- ADMIN ROOM UNRESERVE / RELEASE HANDLER ---
     Route::post('/rooms/unreserve', function (Request $request) {
         if (!Session::has('user_id') || Session::get('role') !== 'admin') {
             return redirect('/')->withErrors(['error' => 'Action forbidden.']);
@@ -508,7 +550,6 @@ Route::prefix('admin')->group(function () {
         return view('admin_bookings', compact('records', 'adminProfile'));
     });
 
-    // --- ADMINISTRATIVE RESERVATION PASS REVOCATION INTERCEPTOR (WITH REASON STRINGS) ---
     Route::post('/bookings/cancel', function (Request $request) {
         if (!Session::has('user_id') || Session::get('role') !== 'admin') {
             return redirect('/')->withErrors(['error' => 'Unauthorized entry.']);
@@ -564,13 +605,13 @@ Route::prefix('admin')->group(function () {
     });
 
     Route::post('/announcements/delete', function (Request $request) {
-        if (!Session::has('user_id') || Session::get('role') !== 'admin') {
-            return redirect('/')->withErrors(['error' => 'Action forbidden.']);
-        }
+    if (!Session::has('user_id') || Session::get('role') !== 'admin') {
+        return redirect('/')->withErrors(['error' => 'Action forbidden.']);
+    }
 
-        DB::table('announcements')->where('id', $request->input('id'))->delete();
+    DB::table('announcements')->where('id', $request->input('id'))->delete();
 
-        return redirect()->back()->with('success', 'Official bulletin notice has been permanently expunged.');
-    });
+    return redirect()->back()->with('success', 'Official bulletin notice has been permanently expunged.');
+});
 
 });
