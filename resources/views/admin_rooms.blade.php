@@ -21,10 +21,11 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-5">
-                    <div class="text-right">
-                        <p class="text-xs font-bold text-white tracking-wide">JPK Kolej Kasa & Sutera</p>
-                        <p class="text-[10px] text-purple-200 font-mono tracking-wider">ADMIN001</p>
-                    </div>
+                    <!-- Replace with this dynamic session rendering block -->
+<div class="text-right">
+    <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Kolej Kasa & Sutera' }}</p>
+    <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
+</div>
                     <a href="/logout" class="text-purple-200 hover:text-white transition p-1">➔</a>
                 </div>
             </div>
@@ -33,18 +34,18 @@
                 <a href="/admin/dashboard" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
                     <span>📋</span> Overview
                 </a>
-                <a href="/admin/rooms" class="text-white border-b-2 border-white pb-2 flex items-center gap-2 opacity-100">
+                <a href="/admin/rooms" class="text-white border-b-2 border-white pb-2 flex items-center gap-2 opacity-100 font-bold">
                     <span>🔧</span> Room Management
                 </a>
                 <a href="/admin/vacancy" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-    <span>👁️</span> Room Vacancy
-</a>
+                    <span>👁️</span> Room Vacancy
+                </a>
                 <a href="/admin/bookings" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-    <span>📅</span> All Bookings
-</a>
+                    <span>📅</span> All Bookings
+                </a>
                 <a href="/admin/announcements" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-    <span>📢</span> Announcements
-</a>
+                    <span>📢</span> Announcements
+                </a>
             </nav>
         </div>
     </header>
@@ -65,7 +66,7 @@
             </div>
 
             @if(session('success'))
-                <div class="bg-[#EAFBF3] border border-[#BFF3DB] text-[#10B981] text-xs font-semibold rounded-xl px-4 py-3 flex items-center gap-2 shadow-sm animate-in fade-in duration-200">
+                <div class="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-semibold rounded-xl px-4 py-3 flex items-center gap-2 shadow-sm animate-in fade-in duration-200">
                     <span class="text-sm">✓</span> {{ session('success') }}
                 </div>
             @endif
@@ -132,9 +133,8 @@
                     <div class="flex flex-wrap gap-4 text-[10px] font-bold text-slate-500 pt-1">
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-[#5B06B2] rounded"></div> Selected</div>
                         <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-[#EAFBF3] border border-[#BFF3DB] rounded"></div> Available</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-[#FFF9E6] border border-[#FFEAA6] rounded"></div> Reserved</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-[#FFF0F0] border border-[#FFD1D1] rounded"></div> Occupied</div>
-                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-[#F1F5F9] border border-[#E2E8F0] rounded"></div> Maintenance</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-[#FFF9E6] border border-[#FFEAA6] rounded"></div> Part-Occupied</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-[#FFF0F0] border border-[#FFD1D1] rounded"></div> Full Blocked</div>
                     </div>
                 </div>
 
@@ -145,7 +145,7 @@
                     <div class="flex flex-wrap gap-3 pt-2">
                         <button type="button" id="btnReserveSelected" disabled onclick="submitFormAction('reserve_selected')" class="bg-amber-100 text-amber-400 font-bold text-xs px-4 py-3 rounded-xl cursor-not-allowed transition">🔒 Reserve Selected (0)</button>
                         <button type="button" onclick="submitFormAction('reserve_floor')" class="bg-[#A84600] hover:bg-[#8F3B00] text-white font-bold text-xs px-4 py-3 rounded-xl shadow-sm transition">🛡️ Reserve Entire Floor</button>
-                        <button type="button" id="btnUnreserveSelected" disabled onclick="submitFormAction('unreserve_selected')" class="bg-slate-100 text-slate-400 font-bold text-xs px-4 py-3 rounded-xl cursor-not-allowed transition">🔓 Unreserve Selected</button>
+                        <button type="button" id="btnUnreserveSelected" disabled onclick="submitFormAction('unreserve_selected')" class="bg-slate-50 border border-slate-200 text-slate-400 font-bold text-xs px-4 py-3 rounded-xl cursor-not-allowed transition">🔓 Unreserve Selected</button>
                         <button type="button" onclick="submitFormAction('unreserve_floor')" class="bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 font-bold text-xs px-4 py-3 rounded-xl shadow-sm transition">🔓 Unreserve Entire Floor</button>
                     </div>
                 </div>
@@ -314,9 +314,18 @@
             }
         }
 
+        // DYNAMIC DIRECTION SWITCH INTERCEPTOR FIX
         function submitFormAction(actionType) {
+            const form = document.getElementById('batchActionForm');
             document.getElementById('hiddenActionType').value = actionType;
-            document.getElementById('batchActionForm').submit();
+            
+            if (actionType.includes('unreserve')) {
+                form.action = '/admin/rooms/unreserve';
+            } else {
+                form.action = '/admin/rooms/reserve';
+            }
+            
+            form.submit();
         }
     </script>
 </body>

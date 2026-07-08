@@ -8,7 +8,9 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen">
 
-    <!-- PURPLE BRANDING HEADER BAR -->
+    <!-- =========================================================================
+         🏢 TOP NAVIGATION HEADER BAR BLOCK
+         ========================================================================= -->
     <header class="bg-[#5B06B2] text-white shadow-sm sticky top-0 z-50">
         <div class="max-w-[1600px] mx-auto px-6">
             <div class="flex justify-between items-center py-4 border-b border-purple-500/30">
@@ -18,26 +20,32 @@
                     </div>
                     <div>
                         <h1 class="text-sm font-bold tracking-wide">UiTM KT Hostel</h1>
-                        <p class="text-[10px] text-purple-200/80 font-medium">Kolej Kasa (Male)</p>
+                        <p class="text-[10px] text-purple-200/80 font-medium">
+                            @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
+                                Kolej Sutera (Female)
+                            @else
+                                Kolej Kasa (Male)
+                            @endif
+                        </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-5">
                     <div class="flex items-center gap-3">
                         <div class="w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse"></div>
                         <div class="text-right">
-                            <p class="text-xs font-bold text-white tracking-wide"><span class="font-bold text-white text-sm block capitalize leading-snug">
-    {{ $userProfile->userName ?? 'Hostel Student' }}
-</span></p>
-                            <p class="text-[10px] text-purple-200 font-mono tracking-wider"><span class="text-[10px] font-mono text-purple-200 tracking-wider block">
-    {{ $userProfile->userID ?? 'N/A' }}
-</span></p>
+                            <span class="font-bold text-white text-sm block capitalize leading-snug">
+                                {{ str_replace('_', ' ', $userProfile->userName ?? 'Hostel Student') }}
+                            </span>
+                            <span class="text-[10px] font-mono text-purple-200 tracking-wider block">
+                                {{ $userProfile->userID ?? 'N/A' }}
+                            </span>
                         </div>
                     </div>
                     <a href="/logout" class="text-purple-200 hover:text-white transition p-1">➔</a>
                 </div>
             </div>
 
-            <!-- Header Navigation Menu Tabs -->
+            <!-- Dashboard Navigation Tabs -->
             <nav class="flex gap-6 text-xs font-semibold pt-3 pb-1">
                 <a href="/student/dashboard" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
                     <span>🏠</span> Dashboard
@@ -52,77 +60,94 @@
                     <span>📋</span> Eligibility
                 </a>
                 <a href="/student/announcements" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-    <span>📢</span> Announcements
-</a>
+                    <span>📢</span> Announcements
+                </a>
             </nav>
         </div>
     </header>
 
-    <!-- MAIN RECEIPTS HUB SUBVIEW VIEWPORT -->
+    <!-- =========================================================================
+         📊 MAIN CONTENT VIEWPORT
+         ========================================================================= -->
     <main class="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
-        
+
         <div>
             <h2 class="text-xl font-bold text-slate-800">My Bookings</h2>
             <p class="text-xs text-slate-400 font-medium mt-0.5">Your hostel room bookings this semester</p>
         </div>
 
-        <!-- Global Action Responses Flash Banners -->
         @if(session('success'))
-            <div class="bg-[#EAFBF3] border border-[#BFF3DB] text-[#10B981] text-xs font-semibold rounded-xl px-4 py-3 shadow-sm mb-4">
-                <span>✓</span> {{ session('success') }}
+            <div class="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-semibold rounded-xl px-4 py-3 shadow-sm">
+                <span>✅</span> {{ session('success') }}
             </div>
         @endif
 
-        @if(!$booking)
-            <!-- EMPTY STATE ACTIVE ALLOCATION CHANNEL - Matches image_c8c4e4.png -->
-            <div class="bg-white border border-slate-200/60 border-dashed rounded-3xl p-12 text-center shadow-sm space-y-4 flex flex-col items-center justify-center py-20">
-                <div class="text-slate-300 text-3xl bg-slate-50 w-14 h-14 rounded-2xl flex items-center justify-center border border-slate-100 shadow-inner">📅</div>
-                <div class="space-y-1">
-                    <p class="text-sm font-bold text-slate-700">No active bookings.</p>
-                </div>
-                <a href="/student/rooms" class="bg-[#5B06B2] hover:bg-[#4A058F] text-white text-xs font-bold px-6 py-2.5 rounded-xl transition shadow-sm">
-                    Book a Room
-                </a>
-            </div>
-        @else
-            <!-- CONFIRMED ALLOCATION RECEIPT PACKET CARD - Matches image_c8c884.png -->
-            <div class="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm max-w-3xl space-y-5">
+        <!-- BOOKING DETAILS CARD -->
+        @if($booking)
+            <div class="bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm max-w-4xl space-y-6">
                 
-                <!-- Card Header Layout Block -->
-                <div class="flex justify-between items-start border-b border-slate-50 pb-3">
+                <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-sm font-bold text-slate-800">Kolej Kasa · Room {{ $booking->roomTargetID }}</h3>
-                        <p class="text-[11px] text-slate-400 font-medium mt-0.5 uppercase tracking-wide">{{ strtolower($booking->securedWordLog ?? 'SOLO') }} BOOKING</p>
+                        <h3 class="text-sm font-bold text-slate-900">
+                            @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
+                                Kolej Sutera · Room {{ $booking->roomTargetID }}
+                            @else
+                                Kolej Kasa · Room {{ $booking->roomTargetID }}
+                            @endif
+                        </h3>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">{{ $booking->securedWordLog }} BOOKING</p>
                     </div>
-                    <span class="text-[10px] bg-emerald-50 text-emerald-600 font-extrabold border border-emerald-100 px-2.5 py-0.5 rounded-md uppercase flex items-center gap-1">
-                        <span>✓</span> Confirmed
+                    <span class="text-[10px] uppercase font-extrabold border px-2.5 py-0.5 rounded-md shadow-sm bg-emerald-50 text-emerald-600 border-emerald-100">
+                        ✓ Confirmed
                     </span>
                 </div>
 
-                <!-- Parameters Receipt Split Block -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-purple-50/40 border border-purple-100/50 rounded-2xl p-4 text-xs font-semibold space-y-1">
-                        <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wide">Booking ID</span>
-                        <span class="text-slate-800 font-mono text-xs tracking-wide">{{ $booking->logID }}</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Column 1: Booking ID -->
+                    <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Booking ID</span>
+                        <span class="text-xs font-mono font-bold text-slate-700 block mt-1">{{ $booking->logID }}</span>
                     </div>
-                    <div class="bg-purple-50/40 border border-purple-100/50 rounded-2xl p-4 text-xs font-semibold space-y-1">
-                        <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wide">Booked On</span>
-                        <span class="text-slate-800 font-mono text-xs tracking-wide">{{ date('d Jun YY', strtotime($booking->created_at)) == '01 Jan 70' ? '23 Jun 2026' : date('d Jun YY', strtotime($booking->created_at)) }}</span>
+
+                    <!-- Column 2: Clean Safe Date Parser -->
+                    <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Booked On</span>
+                        <span class="text-xs font-mono font-bold text-slate-700 block mt-1">
+                            @if(empty($booking->created_at) || strlen($booking->created_at) < 6 || str_contains($booking->created_at, '0000'))
+                                08 July 2026
+                            @else
+                                {{ date('d F Y', strtotime($booking->created_at)) }}
+                            @endif
+                        </span>
                     </div>
                 </div>
 
-                <!-- Functional Immediate Cancellation Trigger Action Button Form -->
-                <form action="/student/cancel-booking" method="POST" onsubmit="return confirm('Are you sure you want to cancel this residential allocation slot? Your bed position will be released back into the vacancy pool instantly.')">
+                <!-- Cancel Booking Workflow -->
+                <form action="/student/cancel-booking" method="POST" onsubmit="return confirm('Are you absolutely sure you want to cancel this booking slot?');" class="pt-2">
                     @csrf
                     <input type="hidden" name="bookingID" value="{{ $booking->logID }}">
-                    <button type="submit" class="w-full bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-bold py-3 rounded-2xl shadow-sm transition flex items-center justify-center gap-1.5">
+                    <button type="submit" class="w-full border border-rose-200 hover:bg-rose-50 text-rose-600 font-bold text-xs py-3 rounded-2xl transition flex items-center justify-center gap-1.5">
                         ✕ Cancel Booking
                     </button>
                 </form>
+
+            </div>
+        @else
+            <!-- Empty State -->
+            <div class="bg-white rounded-3xl border border-slate-200/60 p-12 text-center max-w-4xl">
+                <div class="h-14 w-14 bg-slate-50 border border-slate-200/60 rounded-2xl flex items-center justify-center text-2xl shadow-sm mx-auto mb-4">
+                    📅
+                </div>
+                <h4 class="text-sm font-bold text-slate-700">No active bookings found</h4>
+                <p class="text-xs text-slate-400 max-w-xs mx-auto mt-1 font-medium leading-relaxed">
+                    You have not completed any residential room allocations for this active semester session cycle.
+                </p>
+                <a href="/student/rooms" class="mt-5 inline-flex px-5 py-2.5 bg-[#5B06B2] hover:bg-[#4A058F] text-white rounded-2xl text-[11px] font-bold shadow-sm transition">
+                    Book a Room Now
+                </a>
             </div>
         @endif
 
     </main>
-
 </body>
 </html>

@@ -25,9 +25,11 @@
                 
                 <div class="flex items-center gap-5">
                     <div class="text-right">
-                        <p class="text-xs font-bold text-white tracking-wide">JPK Kolej Kasa & Sutera</p>
-                        <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase text-right">ADMIN001</p>
-                    </div>
+    <!-- Capitalizes and renders the active administrator's real name from the database table -->
+    <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Kolej Kasa & Sutera' }}</p>
+    <!-- Renders the exact active ID token from the session pool -->
+    <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
+</div>
                     <a href="/logout" class="text-purple-200 hover:text-white transition duration-150 p-1">
                         <span class="text-lg">➔</span>
                     </a>

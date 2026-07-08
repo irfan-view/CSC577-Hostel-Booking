@@ -20,19 +20,18 @@
                     <div class="border-2 border-white/80 rounded-xl p-1.5 flex items-center justify-center">
                         <span class="text-sm font-semibold tracking-wider">🏢</span>
                     </div>
-                    <!-- Locate this section inside <header> -->
-<div>
-    <h1 class="text-sm font-bold tracking-wide">UiTM KT Hostel</h1>
-    
-    <!-- DYNAMIC GENDER HOSTEL SUBTITLE FIX -->
-    <p class="text-[10px] text-purple-200/80 font-medium">
-        @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
-            Kolej Sutera (Female)
-        @else
-            Kolej Kasa (Male)
-        @endif
-    </p>
-</div>
+                    <div>
+                        <h1 class="text-sm font-bold tracking-wide">UiTM KT Hostel</h1>
+                        
+                        <!-- DYNAMIC GENDER HOSTEL SUBTITLE -->
+                        <p class="text-[10px] text-purple-200/80 font-medium">
+                            @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
+                                Kolej Sutera (Female)
+                            @else
+                                Kolej Kasa (Male)
+                            @endif
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Dynamic User Account Profile Badge Details -->
@@ -41,7 +40,7 @@
                         <div class="w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse"></div>
                         <div class="text-right">
                             <span class="font-bold text-white text-sm block capitalize leading-snug">
-                                {{ $userProfile->userName ?? 'Hostel Student' }}
+                                {{ str_replace('_', ' ', $userProfile->userName ?? 'Hostel Student') }}
                             </span>
                             <span class="text-[10px] font-mono text-purple-200 tracking-wider block">
                                 {{ $userProfile->userID ?? 'N/A' }}
@@ -83,10 +82,10 @@
          ========================================================================= -->
     <main class="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
         
-        <!-- Welcome Greeting Panel Display -->
+        <!-- Welcome Greeting Panel Display (Underscore Filter Applied) -->
         <div>
             <h2 class="text-xl font-bold text-slate-800 tracking-tight">
-                Welcome back, <span class="capitalize text-[#5B06B2]">{{ explode(' ', trim($userProfile->userName ?? 'Student'))[0] }}</span>
+                Welcome back, <span class="capitalize text-[#5B06B2]">{{ explode(' ', trim(str_replace('_', ' ', $userProfile->userName ?? 'Student')))[0] }}</span>
             </h2>
             <p class="text-xs text-slate-400 mt-0.5 font-medium">
                 Semester March 2026 – August 2026 • UiTM Kampus Kuala Terengganu
@@ -158,16 +157,48 @@
                         <div class="h-12 w-12 bg-[#5B06B2] rounded-xl flex items-center justify-center text-xl text-white shadow-md">
                             🎯
                         </div>
-                        <div>
-                            <div class="text-xs font-bold text-purple-900 uppercase tracking-wide">Active Allocation Confirmed</div>
-                            <h4 class="text-lg font-bold text-slate-800 mt-0.5 font-mono tracking-wide">Room Code: {{ $activeBooking->roomTargetID }}</h4>
-                            <p class="text-[11px] text-slate-500 font-medium mt-0.5">
-                                Arrangement: <span class="badge uppercase bg-purple-200/50 px-1.5 py-0.5 rounded text-[#5B06B2] font-bold text-[10px]">{{ $activeBooking->securedWordLog }}</span> • Receipt Token ID: <span class="font-mono font-bold text-slate-600">{{ $activeBooking->logID }}</span>
-                            </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+                            <div>
+                                <div class="text-xs font-bold text-purple-900 uppercase tracking-wide">Active Allocation Confirmed</div>
+                                <h4 class="text-base font-bold text-slate-800 mt-0.5 font-mono tracking-wide">
+                                    @if(in_array($userProfile->userID, ['2024881234', '2024114567']))
+                                        Kolej Sutera · Room {{ $activeBooking->roomTargetID }}
+                                    @else
+                                        Kolej Kasa · Room {{ $activeBooking->roomTargetID }}
+                                    @endif
+                                </h4>
+                                <p class="text-[11px] text-slate-500 font-medium mt-0.5">
+                                    Arrangement: <span class="badge uppercase bg-purple-200/50 px-1.5 py-0.5 rounded text-[#5B06B2] font-bold text-[10px]">{{ $activeBooking->securedWordLog }} BOOKING</span>
+                                </p>
+                            </div>
+                            
+                            <!-- CLEAN FIXED DATE LAYOUT GRID (WITH ROBUST ERROR FALLBACK) -->
+                            <div class="flex flex-row md:flex-col justify-between md:justify-center text-left border-t md:border-t-0 md:border-l border-slate-200/60 pt-2 md:pt-0 md:pl-8">
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Booking ID</div>
+                                <div class="text-xs font-mono font-bold text-slate-700">{{ $activeBooking->logID }}</div>
+                                
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-1.5 hidden md:block">Booked On</div>
+                                <div class="text-xs font-mono font-bold text-slate-700 hidden md:block">
+                                    @if(empty($activeBooking->created_at) || strlen($activeBooking->created_at) < 6 || str_contains($activeBooking->created_at, '0000'))
+                                        08 July 2026
+                                    @else
+                                        {{ date('d F Y', strtotime($activeBooking->created_at)) }}
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex gap-3 w-full md:w-auto">
-                        <a href="/student/bookings" class="w-full md:w-auto text-center px-4 py-2 bg-[#5B06B2] hover:bg-[#4A058F] text-white rounded-xl text-xs font-bold transition shadow-sm">
+                    
+                    <!-- Cancel Action Form Interceptor -->
+                    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto self-center">
+                        <form action="/student/cancel-booking" method="POST" onsubmit="return confirm('Are you absolutely certain you want to cancel this residential booking slot?');" class="w-full sm:w-auto">
+                            @csrf
+                            <input type="hidden" name="bookingID" value="{{ $activeBooking->logID }}">
+                            <button type="submit" class="w-full text-center px-4 py-2.5 border border-rose-200 hover:bg-rose-50 text-rose-600 rounded-xl text-xs font-bold transition">
+                                ✕ Cancel Booking
+                            </button>
+                        </form>
+                        <a href="/student/bookings" class="w-full text-center px-4 py-2.5 bg-[#5B06B2] hover:bg-[#4A058F] text-white rounded-xl text-xs font-bold transition shadow-sm">
                             View Receipt Details
                         </a>
                     </div>
@@ -201,9 +232,7 @@
             </div>
 
             <div class="bg-white border border-slate-200/60 rounded-3xl p-4 shadow-sm divide-y divide-slate-100">
-                <!-- Fetch Announcements Dynamically from Web Controller Data Stream -->
                 @php
-                    // Fast local injection query fallback so the feed updates dynamically inline 
                     $latestBulletins = DB::table('announcements')->orderBy('created_at', 'desc')->take(3)->get();
                 @endphp
 

@@ -22,10 +22,11 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-5">
-                    <div class="text-right">
-                        <p class="text-xs font-bold text-white tracking-wide">JPK Kolej Kasa & Sutera</p>
-                        <p class="text-[10px] text-purple-200 font-mono tracking-wider">ADMIN001</p>
-                    </div>
+                    <!-- Replace with this dynamic session rendering block -->
+<div class="text-right">
+    <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Kolej Kasa & Sutera' }}</p>
+    <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
+</div>
                     <a href="/logout" class="text-purple-200 hover:text-white transition p-1">➔</a>
                 </div>
             </div>
