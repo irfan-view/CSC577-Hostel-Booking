@@ -21,11 +21,10 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-5">
-                    <!-- Replace with this dynamic session rendering block -->
-<div class="text-right">
-    <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Kolej Kasa & Sutera' }}</p>
-    <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
-</div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Kolej Kasa & Sutera' }}</p>
+                        <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
+                    </div>
                     <a href="/logout" class="text-purple-200 hover:text-white transition p-1">➔</a>
                 </div>
             </div>
@@ -82,14 +81,16 @@
                                 </td>
                                 <td class="p-3">
                                     <div class="font-bold text-slate-700 font-mono target-search-room">{{ $row->roomTargetID }}</div>
-                                    <div class="text-[10px] text-slate-400">Kolej Kasa</div>
+                                    <div class="text-[10px] text-slate-400">
+                                        {{ str_starts_with(strtoupper($row->roomTargetID), 'S') ? 'Kolej Sutera' : 'Kolej Kasa' }}
+                                    </div>
                                 </td>
                                 <td class="p-3">
                                     <span class="px-2 py-0.5 rounded-md font-bold text-[10px] uppercase {{ $row->securedWordLog === 'GROUP' ? 'bg-purple-50 text-[#5B06B2] border border-purple-100' : 'bg-blue-50 text-blue-600 border border-blue-100' }}">
-                                        👥 {{ $row->securedWordLog }}
+                                        {{ $row->securedWordLog === 'GROUP' ? '👥 GROUP' : '👤 SOLO' }}
                                     </span>
                                 </td>
-                                <td class="p-3 font-mono text-slate-400">{{ date('d M', strtotime($row->created_at)) }}</td>
+                                <td class="p-3 font-mono text-slate-400">{{ date('d M Y', strtotime($row->created_at)) }}</td>
                                 <td class="p-3">
                                     @if(str_contains(strtolower($row->bookingStatus), 'cancelled'))
                                         <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-rose-50 text-rose-600 border border-rose-100 block w-max max-w-xs truncate" title="{{ $row->bookingStatus }}">
@@ -164,7 +165,7 @@
             document.getElementById('modalTargetStudentName').innerText = studentName;
             document.getElementById('modalTargetRoomId').innerText = roomId;
             
-            document.getElementById('modalInputReason').value = ''; // Reset input field
+            document.getElementById('modalInputReason').value = ''; 
             
             const backdrop = document.getElementById('cancelReasonModalBackdrop');
             backdrop.classList.remove('hidden');

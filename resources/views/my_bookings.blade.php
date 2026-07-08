@@ -29,7 +29,7 @@
                     <div class="flex items-center gap-3">
                         <div class="w-2.5 h-2.5 rounded-full {{ ($userProfile->strikeCount ?? 0) >= 3 ? 'bg-rose-400' : 'bg-emerald-400' }} animate-pulse"></div>
                         <div class="text-right">
-                            <span class="font-bold text-white text-sm block capitalize leading-snug">
+                            <span class="font-bold text-white text-xs block tracking-wide capitalize">
                                 {{ str_replace('_', ' ', $userProfile->userName ?? 'Hostel Student') }}
                             </span>
                             <span class="text-[10px] font-mono text-purple-200 tracking-wider block">
@@ -94,14 +94,14 @@
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Column 1: Booking ID -->
                     <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Booking ID</span>
                         <span class="text-xs font-mono font-bold text-slate-700 block mt-1">{{ $booking->logID }}</span>
                     </div>
 
-                    <!-- Column 2: Clean Safe Date Parser -->
+                    <!-- Column 2: Date Parser -->
                     <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Booked On</span>
                         <span class="text-xs font-mono font-bold text-slate-700 block mt-1">
@@ -111,6 +111,12 @@
                                 {{ date('d F Y', strtotime($booking->created_at)) }}
                             @endif
                         </span>
+                    </div>
+
+                    <!-- Column 3: Billing Summary Rate (Adjusted to RM 210) -->
+                    <div class="bg-slate-50/60 border border-slate-100 p-4 rounded-2xl">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Semester Rate</span>
+                        <span class="text-xs font-bold text-purple-700 block mt-1">RM 210 <span class="text-[10px] text-slate-400 font-medium">/ sem</span></span>
                     </div>
                 </div>
 

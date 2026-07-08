@@ -21,12 +21,9 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-5">
-                    <div class="flex items-center gap-2">
-                        <!-- Replace with this dynamic session rendering block -->
-<div class="text-right">
-    <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Kolej Kasa & Sutera' }}</p>
-    <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
-</div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Kolej Kasa & Sutera' }}</p>
+                        <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
                     </div>
                     <a href="/logout" class="text-purple-200 hover:text-white transition p-1">➔</a>
                 </div>
@@ -79,7 +76,7 @@
                             </h3>
                             
                             <div class="flex items-center gap-4">
-                                <span class="text-[10px] font-mono text-slate-400 font-medium">Published {{ date('Y-m-d', strtotime($notice->created_at)) }}</span>
+                                <span class="text-[10px] font-mono text-slate-400 font-medium">Published {{ date('d M Y', strtotime($notice->created_at)) }}</span>
                                 
                                 <form action="/admin/announcements/delete" method="POST" onsubmit="return confirm('Are you completely sure you want to permanently delete this notice bulletin?');" class="inline">
                                     @csrf
@@ -129,7 +126,7 @@
 
                 <div class="flex items-center gap-2 pt-1">
                     <input type="checkbox" id="is_urgent" name="is_urgent" class="rounded border-slate-300 text-[#5B06B2] focus:ring-[#5B06B2] h-3.5 w-3.5 cursor-pointer">
-                    <label id="is_urgent" for="is_urgent" class="text-[11px] font-bold text-rose-600 select-none cursor-pointer uppercase tracking-wide">Mark Notice Flag As Urgent Bulletin</label>
+                    <label for="is_urgent" class="text-[11px] font-bold text-rose-600 select-none cursor-pointer uppercase tracking-wide">Mark Notice Flag As Urgent Bulletin</label>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">

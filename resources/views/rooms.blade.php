@@ -8,6 +8,7 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen">
 
+    <!-- HEADER BAR BRANDING -->
     <header class="bg-[#5B06B2] text-white shadow-sm sticky top-0 z-50">
         <div class="max-w-[1600px] mx-auto px-6">
             <div class="flex justify-between items-center py-4 border-b border-purple-500/30">
@@ -34,6 +35,7 @@
                 </div>
             </div>
 
+            <!-- Dashboard Navigation Tabs -->
             <nav class="flex gap-6 text-xs font-semibold pt-3 pb-1">
                 <a href="/student/dashboard" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
                     <span>🏠</span> Dashboard
@@ -54,6 +56,7 @@
         </div>
     </header>
 
+    <!-- MAIN INTERACTIVE HUB VIEWPORT -->
     <main class="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
 
         <div>
@@ -63,12 +66,14 @@
             </p>
         </div>
 
+        <!-- Global Action Flash Responses -->
         @if(session('error'))
             <div class="bg-rose-50 border border-rose-100 text-rose-600 text-xs font-semibold rounded-xl px-4 py-3 shadow-sm">
                 <span>⚠️</span> {{ session('error') }}
             </div>
         @endif
 
+        <!-- FILTER AND LOOKUP CONFIGURATION BAR -->
         <div class="space-y-4">
             <div class="bg-white border border-slate-200/60 p-2 rounded-2xl shadow-sm flex items-center gap-3 px-4">
                 <span class="text-slate-400 text-sm">🔍</span>
@@ -93,6 +98,7 @@
             </div>
         </div>
 
+        <!-- RECYCLER ROOM MATRIX CONTAINER -->
         <div id="roomBrowserGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             @foreach($rooms as $room)
                 @php
@@ -124,18 +130,22 @@
                         </span>
                     </div>
 
+                    <!-- Progress Micro-Bars Indicators -->
                     <div class="space-y-1">
-    <div class="flex gap-1.5 w-full">
-        @for($i = 1; $i <= 4; $i++)
-            <div class="h-1 rounded-full flex-1 {{ $i <= $room->currentOccupancy ? ($room->currentOccupancy >= 4 ? 'bg-rose-400' : 'bg-purple-400') : 'bg-slate-100' }}"></div>
-        @endfor </div>
-</div>
-
-                    <div class="flex justify-between items-center text-[11px] font-semibold text-slate-400 pt-1">
-                        <span class="flex items-center gap-1">🛏️ {{ $bedsLeft }} beds left</span>
-                        <span class="text-slate-800 font-bold">RM 350<span class="text-[10px] text-slate-400 font-medium">/sem</span></span>
+                        <div class="flex gap-1.5 w-full">
+                            @for($i = 1; $i <= 4; $i++)
+                                <div class="h-1 rounded-full flex-1 {{ $i <= $room->currentOccupancy ? ($room->currentOccupancy >= 4 ? 'bg-rose-400' : 'bg-purple-400') : 'bg-slate-100' }}"></div>
+                            @endfor
+                        </div>
                     </div>
 
+                    <!-- Footnote specs indicators (Price adjusted to RM 210) -->
+                    <div class="flex justify-between items-center text-[11px] font-semibold text-slate-400 pt-1">
+                        <span class="flex items-center gap-1">🛏️ {{ $bedsLeft }} beds left</span>
+                        <span class="text-slate-800 font-bold">RM 210<span class="text-[10px] text-slate-400 font-medium">/sem</span></span>
+                    </div>
+
+                    <!-- Direct Booking Form Interceptors -->
                     @if($status === 'Available')
                         <button type="button" onclick="launchAllocationModal('{{ $room->roomID }}', '{{ $floor }}')" class="w-full bg-[#5B06B2] hover:bg-[#4A058F] text-white font-bold text-[11px] py-2.5 rounded-2xl shadow-sm flex items-center justify-center gap-1 transition">
                             Book Now ➔
@@ -150,9 +160,11 @@
         </div>
     </main>
 
+    <!-- SYSTEM BOOKING TYPE MODAL CONTEXT DRAWER -->
     <div id="bookingModalBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full shadow-xl overflow-hidden border border-slate-100 animate-in zoom-in-95 duration-150">
             
+            <!-- Modal Banner Section -->
             <div class="bg-[#5B06B2] text-white p-4 px-6 flex justify-between items-center">
                 <div>
                     <h3 class="text-xs font-bold uppercase tracking-wider text-purple-200">Confirm Booking</h3>
@@ -163,13 +175,15 @@
                 <button onclick="closeAllocationModal()" class="text-purple-200 hover:text-white transition text-lg font-bold">✕</button>
             </div>
 
+            <!-- Receipt Details Container Box (Price adjusted to RM 210) -->
             <div class="p-6 space-y-5">
                 <div class="bg-purple-50/60 border border-purple-100/50 rounded-2xl p-4 text-xs font-semibold text-purple-900 space-y-2">
                     <p class="flex justify-between"><span>Hostel:</span> <span id="receiptSummaryLabel" class="text-slate-700 font-bold"></span></p>
                     <p class="flex justify-between"><span>Gender:</span> <span class="text-slate-700 font-bold capitalize">{{ $userProfile->gender ?? 'Male' }}</span></p>
-                    <p class="flex justify-between"><span>Price:</span> <span class="text-slate-700 font-bold">RM 350 / semester</span></p>
+                    <p class="flex justify-between"><span>Price:</span> <span class="text-slate-700 font-bold">RM 210 / semester</span></p>
                 </div>
 
+                <!-- MAIN FORM ELEMENT PASS SUBMITTER -->
                 <form action="/student/book" method="POST" id="systemAllocationForm" class="space-y-4">
                     @csrf
                     <input type="hidden" name="roomID" id="formHiddenRoomID">
@@ -187,6 +201,7 @@
                         </div>
                     </div>
 
+                    <!-- COLLAPSIBLE GROUP MEMBER IDS PACKET INPUTS -->
                     <div id="groupMembersFields" class="hidden space-y-3 pt-1 border-t border-slate-100 animate-in fade-in duration-150">
                         <div class="bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-semibold rounded-xl p-3 flex items-start gap-2 leading-relaxed">
                             <span class="text-xs">⚠️</span>
@@ -199,6 +214,7 @@
                         </div>
                     </div>
 
+                    <!-- FOOTER WORKFLOW CONTROL TRIGGER ACTIONS -->
                     <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-50">
                         <button type="button" onclick="closeAllocationModal()" class="border border-slate-200 text-slate-500 hover:bg-slate-50 text-xs font-bold py-3 rounded-2xl transition">Cancel</button>
                         <button type="submit" class="bg-[#5B06B2] hover:bg-[#4A058F] text-white text-xs font-bold py-3 rounded-2xl shadow-sm transition">Confirm Booking</button>
@@ -208,6 +224,7 @@
         </div>
     </div>
 
+    <!-- FILTER AND CLIENT-SIDE LOGIC ENGINES -->
     <script>
         let selectedFloorFilter = 'all';
         let selectedWingFilter = 'all';
@@ -252,7 +269,6 @@
             document.getElementById('formHiddenRoomID').value = roomId;
             document.getElementById('modalTargetRoomLabel').innerText = roomId;
             
-            // Dynamically derive the correct hostel designation string from current layout text configuration
             const rawLabelText = document.getElementById('systemHeaderHostelLabel').innerText.split('(')[0].trim();
             document.getElementById('receiptSummaryLabel').innerText = `${roomId} · ${rawLabelText} · Floor ${floorNum}`;
             
