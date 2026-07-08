@@ -66,10 +66,16 @@
             </p>
         </div>
 
-        <!-- Global Action Flash Responses -->
-        @if(session('error'))
-            <div class="bg-rose-50 border border-rose-100 text-rose-600 text-xs font-semibold rounded-xl px-4 py-3 shadow-sm">
-                <span>⚠️</span> {{ session('error') }}
+        <!-- =========================================================================
+             🚨 GLOBAL ERROR INTERCEPTION BLOCK (CATCHES GROUP VALIDATION FAILURES)
+             ========================================================================= -->
+        @if($errors->any())
+            <div class="bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl p-4 shadow-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                <span class="text-base shrink-0 mt-0.5">⚠️</span>
+                <div class="space-y-1">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-rose-700">Booking Processing Denied</h4>
+                    <p class="text-xs font-medium leading-relaxed text-rose-600/90">{{ $errors->first() }}</p>
+                </div>
             </div>
         @endif
 
@@ -139,7 +145,7 @@
                         </div>
                     </div>
 
-                    <!-- Footnote specs indicators (Price adjusted to RM 210) -->
+                    <!-- Footnote specs indicators -->
                     <div class="flex justify-between items-center text-[11px] font-semibold text-slate-400 pt-1">
                         <span class="flex items-center gap-1">🛏️ {{ $bedsLeft }} beds left</span>
                         <span class="text-slate-800 font-bold">RM 210<span class="text-[10px] text-slate-400 font-medium">/sem</span></span>
@@ -175,7 +181,7 @@
                 <button onclick="closeAllocationModal()" class="text-purple-200 hover:text-white transition text-lg font-bold">✕</button>
             </div>
 
-            <!-- Receipt Details Container Box (Price adjusted to RM 210) -->
+            <!-- Receipt Details Container Box -->
             <div class="p-6 space-y-5">
                 <div class="bg-purple-50/60 border border-purple-100/50 rounded-2xl p-4 text-xs font-semibold text-purple-900 space-y-2">
                     <p class="flex justify-between"><span>Hostel:</span> <span id="receiptSummaryLabel" class="text-slate-700 font-bold"></span></p>
@@ -208,9 +214,9 @@
                             <span>Group booking requires exactly 4 members. All must be registered UiTM students of the same gender hostel.</span>
                         </div>
                         <div class="space-y-2 text-xs">
-                            <input type="text" name="peers[]" placeholder="Student ID of member 2" class="w-full bg-slate-50 border border-slate-200 focus:border-purple-400 rounded-xl px-4 py-2.5 font-mono text-xs outline-none tracking-wide transition">
-                            <input type="text" name="peers[]" placeholder="Student ID of member 3" class="w-full bg-slate-50 border border-slate-200 focus:border-purple-400 rounded-xl px-4 py-2.5 font-mono text-xs outline-none tracking-wide transition">
-                            <input type="text" name="peers[]" placeholder="Student ID of member 4" class="w-full bg-slate-50 border border-slate-200 focus:border-purple-400 rounded-xl px-4 py-2.5 font-mono text-xs outline-none tracking-wide transition">
+                            <input type="text" name="peers[]" value="{{ old('peers.0') }}" placeholder="Student ID of member 2" class="w-full bg-slate-50 border border-slate-200 focus:border-purple-400 rounded-xl px-4 py-2.5 font-mono text-xs outline-none tracking-wide transition">
+                            <input type="text" name="peers[]" value="{{ old('peers.1') }}" placeholder="Student ID of member 3" class="w-full bg-slate-50 border border-slate-200 focus:border-purple-400 rounded-xl px-4 py-2.5 font-mono text-xs outline-none tracking-wide transition">
+                            <input type="text" name="peers[]" value="{{ old('peers.2') }}" placeholder="Student ID of member 4" class="w-full bg-slate-50 border border-slate-200 focus:border-purple-400 rounded-xl px-4 py-2.5 font-mono text-xs outline-none tracking-wide transition">
                         </div>
                     </div>
 
@@ -300,6 +306,14 @@
                 groupFields.classList.remove('hidden');
             }
         }
+
+        // Auto-reopen group mode view state layer if old input validation returns flawed loops
+        @if(old('bookingType') === 'group')
+            window.addEventListener('DOMContentLoaded', () => {
+                launchAllocationModal('{{ old("roomID") }}', '{{ substr(old("roomID"), 1, 1) }}');
+                switchBookingMode('group');
+            });
+        @endif
     </script>
 </body>
 </html>

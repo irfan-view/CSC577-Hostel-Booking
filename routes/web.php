@@ -210,7 +210,6 @@ Route::prefix('student')->group(function () {
         $availableRoomsCount = $totalRoomsCount - $occupiedRoomsCount;
         $announcementsCount = DB::table('announcements')->count();
 
-        // Fetch announcements directly for the dashboard view component
         $announcements = DB::table('announcements')
             ->orderBy('is_urgent', 'desc')
             ->orderBy('created_at', 'desc')
@@ -220,7 +219,6 @@ Route::prefix('student')->group(function () {
         return view('dashboard', compact('userProfile', 'activeBooking', 'totalRoomsCount', 'occupiedRoomsCount', 'availableRoomsCount', 'announcementsCount', 'announcements'));
     });
 
-    // --- SECURE ROOM LOOKUP VIEWPORT (WITH 3-STRIKE DISCIPLINARY GUARD) ---
     Route::get('/rooms', function () {
         if (!Session::has('user_id') || Session::get('role') !== 'student') {
             return redirect('/')->withErrors(['error' => 'Access expired.']);
@@ -229,7 +227,6 @@ Route::prefix('student')->group(function () {
         $userId = Session::get('user_id');
         $userProfile = DB::table('hostel_users')->where('userID', $userId)->first() ?? (object)['userID' => $userId, 'userName' => 'Ahmad Irfan', 'gender' => 'Male', 'strikeCount' => 0];
 
-        // 🚨 SECURITY PRIVILEGE LOCK GUARD
         if (($userProfile->strikeCount ?? 0) >= 3) {
             return redirect('/student/eligibility')->withErrors(['error' => 'Your booking privileges have been locked due to excessive strikes.']);
         }
@@ -253,7 +250,7 @@ Route::prefix('student')->group(function () {
         $userId = Session::get('user_id');
         $userProfile = DB::table('hostel_users')->where('userID', $userId)->first();
 
-        // 🚨 BACKEND STRIKE POST BLOCKER
+        // 1. BACKEND STRIKE POST BLOCKER FOR PRIMARY BOOKER
         if ($userProfile && ($userProfile->strikeCount ?? 0) >= 3) {
             return redirect('/student/eligibility')->withErrors(['error' => 'Action forbidden. Your account is frozen due to excessive strikes.']);
         }
@@ -270,12 +267,53 @@ Route::prefix('student')->group(function () {
             return redirect('/student/dashboard')->withErrors(['error' => 'You already possess an active structural allocation receipt this semester.']);
         }
 
+        // 2. DEFENSIVE PROTECTION DECK FOR GROUP INPUT VALIDATION
+        if ($bookingType === 'group') {
+            $peers = $request->input('peers', []);
+            $validPeersCount = 0;
+
+            foreach ($peers as $peerID) {
+                if (!empty($peerID)) {
+                    $peerID = trim($peerID);
+                    $validPeersCount++;
+
+                    // A. Check existence in ledger
+                    $peerProfile = DB::table('hostel_users')->where('userID', $peerID)->first();
+                    if (!$peerProfile) {
+                        return redirect()->back()->withInput()->withErrors(['error' => "Validation Failure: Student ID '{$peerID}' does not exist in the system registry."]);
+                    }
+
+                    // B. Enforce Gender Alignment
+                    if (strcasecmp($peerProfile->gender, $userProfile->gender) !== 0) {
+                        return redirect()->back()->withInput()->withErrors(['error' => "Validation Failure: Student '{$peerProfile->userName}' ({$peerID}) cannot be added to this room due to a gender mismatch restriction."]);
+                    }
+
+                    // C. Enforce Disciplinary Sanctions Guard
+                    if (($peerProfile->strikeCount ?? 0) >= 3) {
+                        return redirect()->back()->withInput()->withErrors(['error' => "Validation Failure: Student '{$peerProfile->userName}' ({$peerID}) is barred from booking due to excessive policy violation strikes."]);
+                    }
+
+                    // D. Ensure the peer doesn't already hold another active booking slot
+                    $peerExistingBooking = DB::table('reservations')
+                        ->where('userID', $peerID)
+                        ->where('bookingStatus', 'Confirmed')
+                        ->exists();
+                    if ($peerExistingBooking) {
+                        return redirect()->back()->withInput()->withErrors(['error' => "Validation Failure: Student '{$peerProfile->userName}' ({$peerID}) has already secured a room reservation pass for this semester."]);
+                    }
+                }
+            }
+
+            if ($validPeersCount !== 3) {
+                return redirect()->back()->withInput()->withErrors(['error' => 'Group booking requires exactly 4 members. Please fill out all 3 peer ID input boxes.']);
+            }
+        }
+
+        // 3. EXECUTE SAFE ATOMIC DATABASE TRANSACTION WRITE
         DB::transaction(function () use ($userId, $roomID, $bookingType, $request) {
             if ($bookingType === 'group') {
-                $logID = 'BK' . rand(1000, 9999);
-                
                 DB::table('reservations')->insert([
-                    'logID' => $logID,
+                    'logID' => 'BK' . rand(1000, 9999),
                     'userID' => $userId,
                     'roomTargetID' => $roomID,
                     'securedWordLog' => 'GROUP',
@@ -283,7 +321,6 @@ Route::prefix('student')->group(function () {
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
-
                 DB::table('rooms')->where('roomID', $roomID)->increment('currentOccupancy');
 
                 $peers = $request->input('peers', []);
@@ -291,7 +328,7 @@ Route::prefix('student')->group(function () {
                     if (!empty($peerID)) {
                         DB::table('reservations')->insert([
                             'logID' => 'BK' . rand(1000, 9999),
-                            'userID' => $peerID,
+                            'userID' => trim($peerID),
                             'roomTargetID' => $roomID,
                             'securedWordLog' => 'GROUP',
                             'bookingStatus' => 'Confirmed',
@@ -302,10 +339,8 @@ Route::prefix('student')->group(function () {
                     }
                 }
             } else {
-                $logID = 'BK' . rand(1000, 9999);
-
                 DB::table('reservations')->insert([
-                    'logID' => $logID,
+                    'logID' => 'BK' . rand(1000, 9999),
                     'userID' => $userId,
                     'roomTargetID' => $roomID,
                     'securedWordLog' => 'SOLO',
@@ -313,12 +348,11 @@ Route::prefix('student')->group(function () {
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
-
                 DB::table('rooms')->where('roomID', $roomID)->increment('currentOccupancy');
             }
         });
 
-        return redirect('/student/dashboard')->with('success', 'Your hostel bedroom reservation pass has compiled successfully!');
+        return redirect('/student/dashboard')->with('success', 'Your group hostel bedroom reservation pass has compiled and verified successfully!');
     });
 
     Route::get('/bookings', function () {
@@ -397,7 +431,6 @@ Route::prefix('admin')->group(function () {
         $adminId = Session::get('user_id');
         $adminProfile = DB::table('hostel_users')->where('userID', $adminId)->first();
 
-        // 📊 1. CALCULATE TOP-ROW METRIC CARDS AGGREGATES
         $totalRooms = DB::table('rooms')->count();
         $occupiedRooms = DB::table('rooms')->where('currentOccupancy', '>=', 4)->count();
         $activeBookings = DB::table('reservations')->where('bookingStatus', 'Confirmed')->count();
@@ -410,7 +443,6 @@ Route::prefix('admin')->group(function () {
 
         $availableRooms = DB::table('rooms')->where('currentOccupancy', '<', 4)->count();
 
-        // 🏢 2. CALCULATE DETAILED HOSTEL CLUSTER BREAKDOWNS
         $kasaTotal = DB::table('rooms')->where('roomID', 'LIKE', 'K%')->count() ?: 1;
         $kasaOccupied = DB::table('rooms')->where('roomID', 'LIKE', 'K%')->where('currentOccupancy', '>=', 4)->count();
         $kasaAvailable = DB::table('rooms')->where('roomID', 'LIKE', 'K%')->where('currentOccupancy', '<', 4)->count();
@@ -421,11 +453,9 @@ Route::prefix('admin')->group(function () {
         $suteraAvailable = DB::table('rooms')->where('roomID', 'LIKE', 'S%')->where('currentOccupancy', '<', 4)->count();
         $suteraRate = round(($suteraOccupied / $suteraTotal) * 100);
 
-        // 📊 3. CALCULATE DISTRIBUTION SUMMARY METRICS
         $totalBedsAvailable = (DB::table('rooms')->count() * 4) - DB::table('rooms')->sum('currentOccupancy');
         $totalBedsOccupied = DB::table('rooms')->sum('currentOccupancy');
 
-        // 🕒 4. PULL HISTORICAL LOG HISTORY ENGINE
         $recentActivities = DB::table('reservations')
             ->join('hostel_users', 'reservations.userID', '=', 'hostel_users.userID')
             ->select('reservations.logID', 'reservations.roomTargetID', 'reservations.bookingStatus', 'reservations.updated_at', 'hostel_users.userName')
