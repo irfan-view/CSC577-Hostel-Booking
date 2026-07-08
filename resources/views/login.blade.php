@@ -59,7 +59,6 @@
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">MFA Token (6-digit)</label>
                 <input type="text" name="mfa_token" placeholder="e.g. 123456" maxlength="6"
                     class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition">
-                <p class="text-[10px] text-slate-400 mt-1">Demo MFA token requirement: <span class="font-mono bg-slate-100 px-1 rounded">123456</span></p>
             </div>
 
             <button type="submit" class="w-full mt-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold py-3 rounded-xl shadow-lg shadow-purple-700/20 transition duration-150 transform active:scale-[0.98]">
