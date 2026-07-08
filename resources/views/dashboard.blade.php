@@ -8,6 +8,9 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen">
 
+    <!-- =========================================================================
+         🏢 TOP NAVIGATION HEADER BAR BLOCK
+         ========================================================================= -->
     <header class="bg-[#5B06B2] text-white shadow-sm sticky top-0 z-50">
         <div class="max-w-[1600px] mx-auto px-6">
             <div class="flex justify-between items-center py-4 border-b border-purple-500/30">
@@ -23,7 +26,9 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-5">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-3">
+                        <!-- Dynamic status indicator dot changes based on strike account health -->
+                        <div class="w-2.5 h-2.5 rounded-full {{ ($userProfile->strikeCount ?? 0) >= 3 ? 'bg-rose-400' : 'bg-emerald-400' }} animate-pulse"></div>
                         <div class="text-right">
                             <span class="font-bold text-white text-xs block tracking-wide capitalize">{{ $userProfile->userName ?? 'Student Account' }}</span>
                             <span class="text-[9px] font-mono text-purple-200 tracking-wider block uppercase">{{ $userProfile->userID ?? Session::get('user_id') }}</span>
@@ -33,6 +38,7 @@
                 </div>
             </div>
 
+            <!-- Navigation Menu Links Tabs -->
             <nav class="flex gap-6 text-xs font-semibold pt-3 pb-1">
                 <a href="/student/dashboard" class="text-white border-b-2 border-white pb-2 flex items-center gap-1.5 opacity-100 font-bold">🏠 Dashboard</a>
                 <a href="/student/rooms" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-1.5 opacity-80">🗺️ Book Room</a>
@@ -43,8 +49,12 @@
         </div>
     </header>
 
+    <!-- =========================================================================
+         📊 MAIN STUDENT OVERVIEW VIEWPORT
+         ========================================================================= -->
     <main class="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
 
+        <!-- Welcome Banner Segment Header -->
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="text-xl font-bold text-slate-800">Welcome back, <span class="capitalize text-[#5B06B2]">{{ explode(' ', trim($userProfile->userName ?? 'Student'))[0] }}</span></h2>
@@ -55,6 +65,7 @@
             </span>
         </div>
 
+        <!-- Success/Error Interception Flash Channel Banners -->
         @if(session('success'))
             <div class="bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-semibold rounded-xl px-4 py-3 shadow-sm">
                 <span>✅</span> {{ session('success') }}
@@ -67,6 +78,7 @@
             </div>
         @endif
 
+        <!-- UPPER 4-COLUMN SUMMARY METRIC ROW GRID -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <div class="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm flex items-center justify-between">
@@ -103,8 +115,10 @@
 
         </div>
 
+        <!-- TWO-COLUMN SECTION GRID layouts: ALLOCATION WORKFLOWS vs OFFICIAL BULLETINS -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
+            <!-- LEFT WRAPPER PANELS (OCCUPIES 2 COLS ON LARGER RENDER DESKS) -->
             <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm space-y-6 flex flex-col justify-between">
                 <div>
                     <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
@@ -114,6 +128,7 @@
 
                     <div class="mt-6">
                         @if($activeBooking)
+                            <!-- Confirmed Active Booking Record Container -->
                             <div class="border border-emerald-100 bg-emerald-50/20 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:flex-wrap sm:items-center gap-4">
                                 <div class="space-y-1">
                                     <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-700 font-bold rounded-lg text-[10px] uppercase">Active Confirmation Pass</span>
@@ -125,6 +140,7 @@
                                 </a>
                             </div>
                         @else
+                            <!-- No Active Booking Template Fallback View -->
                             <div class="text-center py-8 space-y-4">
                                 <div class="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-lg mx-auto">🛏️</div>
                                 <div class="space-y-1 max-w-sm mx-auto">
@@ -134,10 +150,12 @@
                                 
                                 <div class="pt-2 flex justify-center">
                                     @if(($userProfile->strikeCount ?? 0) >= 3)
+                                        <!-- If student has 3 or more strikes, redirect them to check their suspension ledger -->
                                         <a href="/student/eligibility" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
                                             ⚠️ View Account Restrictions
                                         </a>
                                     @else
+                                        <!-- Normal active student navigation path shortcut -->
                                         <a href="/student/rooms" class="bg-[#5B06B2] hover:bg-purple-700 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-sm transition flex items-center gap-2">
                                             🚀 Browse Available Rooms
                                         </a>
@@ -149,6 +167,7 @@
                 </div>
             </div>
 
+            <!-- RIGHT WRAPPER PANELS: OFFICIAL SYSTEM BULLETINS LIVE FEED (OCCUPIES 1 COL) -->
             <div class="bg-white rounded-3xl border border-slate-200/60 p-6 shadow-sm space-y-4">
                 <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
                     <div class="flex items-center gap-2">
@@ -158,6 +177,7 @@
                     <a href="/student/announcements" class="text-[11px] font-bold text-[#5B06B2] hover:underline">View All</a>
                 </div>
 
+                <!-- Live Announcements Dynamic Deck Iteration -->
                 <div class="space-y-3 overflow-y-auto max-h-[320px] pr-1">
                     @forelse($announcements as $bulletin)
                         <div class="p-3 border rounded-xl shadow-2xs transition-all duration-200 hover:border-purple-200

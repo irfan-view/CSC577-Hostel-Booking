@@ -25,11 +25,9 @@
                 
                 <div class="flex items-center gap-5">
                     <div class="text-right">
-    <!-- Capitalizes and renders the active administrator's real name from the database table -->
-    <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Kolej Kasa & Sutera' }}</p>
-    <!-- Renders the exact active ID token from the session pool -->
-    <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
-</div>
+                        <p class="text-xs font-bold text-white tracking-wide capitalize">{{ $adminProfile->userName ?? 'JPK Supervisor' }}</p>
+                        <p class="text-[10px] text-purple-200 font-mono tracking-wider uppercase">{{ Session::get('user_id', 'ADMIN001') }}</p>
+                    </div>
                     <a href="/logout" class="text-purple-200 hover:text-white transition duration-150 p-1">
                         <span class="text-lg">➔</span>
                     </a>
@@ -38,21 +36,21 @@
 
             <!-- Horizontal navigation bar tabs -->
             <nav class="flex gap-6 text-xs font-semibold pt-3 pb-1">
-                <a href="/admin/dashboard" class="text-white border-b-2 border-white pb-2 flex items-center gap-2 opacity-100">
+                <a href="/admin/dashboard" class="text-white border-b-2 border-white pb-2 flex items-center gap-2 opacity-100 font-bold">
                     <span>📋</span> Overview
                 </a>
                 <a href="/admin/rooms" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-    <span>🔧</span> Room Management
-</a>
+                    <span>🔧</span> Room Management
+                </a>
                 <a href="/admin/vacancy" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-    <span>👁️</span> Room Vacancy
-</a>
+                    <span>👁️</span> Room Vacancy
+                </a>
                 <a href="/admin/bookings" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-    <span>📅</span> All Bookings
-</a>
+                    <span>📅</span> All Bookings
+                </a>
                 <a href="/admin/announcements" class="text-purple-100/70 hover:text-white transition pb-2 flex items-center gap-2 opacity-80">
-    <span>📢</span> Announcements
-</a>
+                    <span>📢</span> Announcements
+                </a>
             </nav>
         </div>
     </header>
@@ -74,7 +72,7 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-xs font-medium text-slate-400">Available Rooms</p>
-                        <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ $availableRooms }}</h3>
+                        <h3 class="text-3xl font-bold text-slate-800 mt-2 font-mono">{{ $availableRooms }}</h3>
                     </div>
                     <div class="bg-emerald-50 text-emerald-600 rounded-xl p-2.5 text-xs font-bold border border-emerald-100 shadow-sm">🛏️</div>
                 </div>
@@ -86,7 +84,7 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-xs font-medium text-slate-400">Occupied Rooms</p>
-                        <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ $occupiedRooms }}</h3>
+                        <h3 class="text-3xl font-bold text-slate-800 mt-2 font-mono">{{ $occupiedRooms }}</h3>
                     </div>
                     <div class="bg-purple-50 text-purple-600 rounded-xl p-2.5 text-xs font-bold border border-purple-100 shadow-sm">👥</div>
                 </div>
@@ -98,19 +96,19 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-xs font-medium text-slate-400">Active Bookings</p>
-                        <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ $activeBookings }}</h3>
+                        <h3 class="text-3xl font-bold text-slate-800 mt-2 font-mono">{{ $activeBookings }}</h3>
                     </div>
                     <div class="bg-indigo-50 text-indigo-600 rounded-xl p-2.5 text-xs font-bold border border-indigo-100 shadow-sm">📅</div>
                 </div>
                 <p class="text-[10px] font-medium text-slate-400 mt-2">This semester</p>
             </div>
 
-            <!-- Card 4: Under Maintenance -->
+            <!-- Card 4: Blocked -->
             <div class="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm flex flex-col justify-between min-h-[130px]">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-medium text-slate-400">Under Maintenance</p>
-                        <h3 class="text-3xl font-bold text-slate-800 mt-2">31</h3>
+                        <p class="text-xs font-medium text-slate-400">Blocked</p>
+                        <h3 class="text-3xl font-bold text-slate-800 mt-2 font-mono">{{ $maintenanceRooms }}</h3>
                     </div>
                     <div class="bg-slate-50 text-slate-600 rounded-xl p-2.5 text-xs font-bold border border-slate-100 shadow-sm">🔧</div>
                 </div>
@@ -132,15 +130,15 @@
                             <p class="text-[10px] font-medium text-slate-400">Male Hostel</p>
                         </div>
                     </div>
-                    <span class="text-base font-extrabold text-slate-800">20%</span>
+                    <span class="text-base font-extrabold text-slate-800 font-mono">{{ $kasaRate }}%</span>
                 </div>
                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-3">
-                    <div class="bg-[#5B06B2] h-full rounded-full" style="width: 20%"></div>
+                    <div class="bg-[#5B06B2] h-full rounded-full transition-all duration-300" style="width: {{ $kasaRate }}%"></div>
                 </div>
-                <div class="flex justify-between text-[10px] font-medium text-slate-400">
-                    <span>80 available</span>
-                    <span>28 occupied</span>
-                    <span>141 total</span>
+                <div class="flex justify-between text-[10px] font-medium text-slate-400 font-mono">
+                    <span>{{ $kasaAvailable }} available</span>
+                    <span>{{ $kasaOccupied }} occupied</span>
+                    <span>{{ $kasaTotal }} total rooms</span>
                 </div>
             </div>
 
@@ -154,15 +152,15 @@
                             <p class="text-[10px] font-medium text-slate-400">Female Hostel</p>
                         </div>
                     </div>
-                    <span class="text-base font-extrabold text-slate-800">18%</span>
+                    <span class="text-base font-extrabold text-slate-800 font-mono">{{ $suteraRate }}%</span>
                 </div>
                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-3">
-                    <div class="bg-[#5B06B2] h-full rounded-full" style="width: 18%"></div>
+                    <div class="bg-[#5B06B2] h-full rounded-full transition-all duration-300" style="width: {{ $suteraRate }}%"></div>
                 </div>
-                <div class="flex justify-between text-[10px] font-medium text-slate-400">
-                    <span>81 available</span>
-                    <span>26 occupied</span>
-                    <span>141 total</span>
+                <div class="flex justify-between text-[10px] font-medium text-slate-400 font-mono">
+                    <span>{{ $suteraAvailable }} available</span>
+                    <span>{{ $suteraOccupied }} occupied</span>
+                    <span>{{ $suteraTotal }} total rooms</span>
                 </div>
             </div>
 
@@ -170,17 +168,21 @@
 
         <!-- LOWER ROW: CHARTS AREA VISUAL PLACEHOLDERS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm min-h-[220px] flex flex-col justify-between">
+            <div class="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm min-h-[140px] flex flex-col justify-between">
                 <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">📊 Room Status Distribution</h4>
                 <div class="flex-1 flex items-center justify-center border border-dashed border-slate-200 rounded-xl bg-slate-50/50 p-4">
-                    <p class="text-[11px] font-medium text-purple-600/70 font-mono text-center">Available: 161 &nbsp;|&nbsp; Occupied: 54 &nbsp;|&nbsp; Reserved: 36 &nbsp;|&nbsp; Maintenance: 31</p>
+                    <p class="text-[11px] font-medium text-purple-600/70 font-mono text-center">
+                        Total Rooms Registered: {{ $availableRooms + $occupiedRooms + $maintenanceRooms }} &nbsp;|&nbsp; Available: {{ $availableRooms }} &nbsp;|&nbsp; Full: {{ $occupiedRooms }} &nbsp;|&nbsp; Blocked: {{ $maintenanceRooms }}
+                    </p>
                 </div>
             </div>
             
-            <div class="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm min-h-[220px] flex flex-col justify-between">
-                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">📈 Occupancy by Hostel Cluster</h4>
+            <div class="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm min-h-[140px] flex flex-col justify-between">
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">📈 Bed Spaces Inventory</h4>
                 <div class="flex-1 flex items-center justify-center border border-dashed border-slate-200 rounded-xl bg-slate-50/50 p-4">
-                    <p class="text-[11px] font-medium text-amber-600 font-mono text-center">Kolej Kasa: 80 Vacant Beds &nbsp;|&nbsp; Kolej Sutera: 81 Vacant Beds</p>
+                    <p class="text-[11px] font-medium text-amber-600 font-mono text-center">
+                        Live Occupied Beds: {{ $totalBedsOccupied }} Total Slots &nbsp;|&nbsp; Remaining Vacant Beds: {{ $totalBedsAvailable }} Open Slots
+                    </p>
                 </div>
             </div>
         </div>
@@ -190,41 +192,22 @@
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-3">Recent Activity Log</h3>
             
             <div class="space-y-4">
-                <!-- Log 1 -->
-                <div class="flex gap-4 items-start text-xs border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                    <div class="text-slate-400 mt-0.5">🕒</div>
-                    <div>
-                        <p class="font-semibold text-slate-700">Kolej Kasa Room KASA-301 set to Maintenance</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5 font-mono">ADMIN001 · 2026-06-12 09:14</p>
+                @forelse($recentActivities as $log)
+                    <div class="flex gap-4 items-start text-xs border-b border-slate-50 pb-3 last:border-0 last:pb-0">
+                        <div class="text-slate-400 mt-0.5">🕒</div>
+                        <div>
+                            <p class="font-semibold text-slate-700">
+                                Student <span class="capitalize text-purple-700 font-bold">{{ $log->userName }}</span> updated reservation to state: 
+                                <span class="px-2 py-0.5 bg-slate-100 font-mono text-[10px] font-bold rounded border tracking-wide uppercase">{{ $log->bookingStatus }}</span> on room <span class="font-mono font-bold">{{ $log->roomTargetID }}</span>
+                            </p>
+                            <p class="text-[10px] text-slate-400 mt-0.5 font-mono">Reference Ticket ID: {{ $log->logID }} · {{ date('Y-m-d H:i', strtotime($log->updated_at)) }}</p>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Log 2 -->
-                <div class="flex gap-4 items-start text-xs border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                    <div class="text-slate-400 mt-0.5">🕒</div>
-                    <div>
-                        <p class="font-semibold text-slate-700">Kolej Sutera Floor 3 reserved for PALAPES</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5 font-mono">ADMIN001 · 2026-06-11 17:30</p>
+                @empty
+                    <div class="text-center py-6 text-slate-400 text-xs font-medium">
+                        No recent active booking logs recorded in this system loop workspace.
                     </div>
-                </div>
-
-                <!-- Log 3 -->
-                <div class="flex gap-4 items-start text-xs border-b border-slate-50 pb-3 last:border-0 last:pb-0">
-                    <div class="text-slate-400 mt-0.5">🕒</div>
-                    <div>
-                        <p class="font-semibold text-slate-700">Booking BK0003 cancelled by Admin</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5 font-mono">ADMIN001 · 2026-06-11 08:45</p>
-                    </div>
-                </div>
-
-                <!-- Log 4 -->
-                <div class="flex gap-4 items-start text-xs">
-                    <div class="text-slate-400 mt-0.5">🕒</div>
-                    <div>
-                        <p class="font-semibold text-slate-700">Announcement published: Hostel Booking Open</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5 font-mono">ADMIN001 · 2026-06-10 11:20</p>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
 

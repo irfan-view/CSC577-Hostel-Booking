@@ -404,19 +404,51 @@ Route::prefix('admin')->group(function () {
             return redirect('/')->withErrors(['error' => 'Access Denied. Administrators only.']);
         }
 
-        $totalRooms = DB::table('rooms')->count();
-        $occupiedRooms = DB::table('rooms')->where('currentOccupancy', '>=', 4)->count();
-        $activeBookings = DB::table('reservations')->where('bookingStatus', 'Confirmed')->count();
-
-        $totalBedsPool = $totalRooms * 4;
-        $availableRooms = $totalBedsPool - DB::table('rooms')->sum('currentOccupancy');
-        
-        if ($availableRooms < 0) { $availableRooms = 0; }
-
         $adminId = Session::get('user_id');
         $adminProfile = DB::table('hostel_users')->where('userID', $adminId)->first();
 
-        return view('admin_dashboard', compact('availableRooms', 'occupiedRooms', 'activeBookings', 'totalRooms', 'adminProfile'));
+        // 📊 1. CALCULATE TOP-ROW METRIC CARDS AGGREGATES
+        $totalRooms = DB::table('rooms')->count();
+        $occupiedRooms = DB::table('rooms')->where('currentOccupancy', '>=', 4)->count();
+        $activeBookings = DB::table('reservations')->where('bookingStatus', 'Confirmed')->count();
+        
+        $maintenanceRooms = DB::table('rooms')->where('currentOccupancy', 4)->whereNotExists(function ($query) {
+            $query->select(DB::raw(1))
+                  ->from('reservations')
+                  ->whereRaw('reservations.roomTargetID = rooms.roomID');
+        })->count();
+
+        $availableRooms = DB::table('rooms')->where('currentOccupancy', '<', 4)->count();
+
+        // 🏢 2. CALCULATE DETAILED HOSTEL CLUSTER BREAKDOWNS
+        $kasaTotal = DB::table('rooms')->where('roomID', 'LIKE', 'K%')->count() ?: 1;
+        $kasaOccupied = DB::table('rooms')->where('roomID', 'LIKE', 'K%')->where('currentOccupancy', '>=', 4)->count();
+        $kasaAvailable = DB::table('rooms')->where('roomID', 'LIKE', 'K%')->where('currentOccupancy', '<', 4)->count();
+        $kasaRate = round(($kasaOccupied / $kasaTotal) * 100);
+
+        $suteraTotal = DB::table('rooms')->where('roomID', 'LIKE', 'S%')->count() ?: 1;
+        $suteraOccupied = DB::table('rooms')->where('roomID', 'LIKE', 'S%')->where('currentOccupancy', '>=', 4)->count();
+        $suteraAvailable = DB::table('rooms')->where('roomID', 'LIKE', 'S%')->where('currentOccupancy', '<', 4)->count();
+        $suteraRate = round(($suteraOccupied / $suteraTotal) * 100);
+
+        // 📊 3. CALCULATE DISTRIBUTION SUMMARY METRICS
+        $totalBedsAvailable = (DB::table('rooms')->count() * 4) - DB::table('rooms')->sum('currentOccupancy');
+        $totalBedsOccupied = DB::table('rooms')->sum('currentOccupancy');
+
+        // 🕒 4. PULL HISTORICAL LOG HISTORY ENGINE
+        $recentActivities = DB::table('reservations')
+            ->join('hostel_users', 'reservations.userID', '=', 'hostel_users.userID')
+            ->select('reservations.logID', 'reservations.roomTargetID', 'reservations.bookingStatus', 'reservations.updated_at', 'hostel_users.userName')
+            ->orderBy('reservations.updated_at', 'desc')
+            ->take(4)
+            ->get();
+
+        return view('admin_dashboard', compact(
+            'adminProfile', 'availableRooms', 'occupiedRooms', 'activeBookings', 'maintenanceRooms',
+            'kasaTotal', 'kasaOccupied', 'kasaAvailable', 'kasaRate',
+            'suteraTotal', 'suteraOccupied', 'suteraAvailable', 'suteraRate',
+            'totalBedsAvailable', 'totalBedsOccupied', 'recentActivities'
+        ));
     });
 
     Route::get('/rooms', function () {
@@ -605,13 +637,13 @@ Route::prefix('admin')->group(function () {
     });
 
     Route::post('/announcements/delete', function (Request $request) {
-    if (!Session::has('user_id') || Session::get('role') !== 'admin') {
-        return redirect('/')->withErrors(['error' => 'Action forbidden.']);
-    }
+        if (!Session::has('user_id') || Session::get('role') !== 'admin') {
+            return redirect('/')->withErrors(['error' => 'Action forbidden.']);
+        }
 
-    DB::table('announcements')->where('id', $request->input('id'))->delete();
+        DB::table('announcements')->where('id', $request->input('id'))->delete();
 
-    return redirect()->back()->with('success', 'Official bulletin notice has been permanently expunged.');
-});
+        return redirect()->back()->with('success', 'Official bulletin notice has been permanently expunged.');
+    });
 
 });
