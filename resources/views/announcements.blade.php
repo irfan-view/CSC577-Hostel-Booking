@@ -31,8 +31,12 @@
                     <div class="flex items-center gap-3">
                         <div class="w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse"></div>
                         <div class="text-right">
-                            <p class="text-xs font-bold text-white tracking-wide">Ahmad Irfan</p>
-                            <p class="text-[10px] text-purple-200 font-mono tracking-wider">{{ Session::get('user_id', '2024669856') }}</p>
+                            <p class="text-xs font-bold text-white tracking-wide"><span class="font-bold text-white text-sm block capitalize leading-snug">
+    {{ $userProfile->userName ?? 'Hostel Student' }}
+</span></p>
+                            <p class="text-[10px] text-purple-200 font-mono tracking-wider"><span class="text-[10px] font-mono text-purple-200 tracking-wider block">
+    {{ $userProfile->userID ?? 'N/A' }}
+</span></p>
                         </div>
                     </div>
                     <a href="/logout" class="text-purple-200 hover:text-white transition p-1">➔</a>
