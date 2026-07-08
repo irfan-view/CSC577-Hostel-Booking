@@ -1,59 +1,45 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏢 UiTM Kampus Kuala Terengganu Hostel Booking System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+An automated, data-driven web application built with **Laravel** and **Tailwind CSS** designed to streamline room allocation management for Kolej Kasa (Male) and Kolej Sutera (Female). The system features intelligent dynamic gender-cohort filtering, comprehensive administrative bulk reservation tools, automated policy violation tracking, and integrated real-time notification feeds.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 👥 Group Project Team Members (CS270 - Semester 4)
+* **AHMAD IRFAN BIN MUHAMAD ARIF** (2024669856)
+* **MOHAMAD IZZRUL EMIR BIN MD SHAFIAN** (2024236368)
+* **HARZAN QAYYUM BIN MAIZAN** (2024690002)
+* **MEOR MUHAMMAD SYARIFF BIN MEOR SHAHAROL NIZAM** (2024680092)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚀 Key System Features
 
-## Learning Laravel
+### 🏢 Student Portal Workflows
+* **Intelligent Inventory Matcher:** Dynamically filters room availability matching the authenticated student's true `gender` attribute—completely separating male (**KXXX**) and female (**SXXX**) allocations.
+* **Dual Booking Modes:** Accommodates single reservation requirements (`SOLO`) alongside integrated multi-occupant (`GROUP`) tracking logic.
+* **Dynamic Compliance Shield:** Directly implements 3-strike disciplinary guardrails. Students with 3 or more policy violation records are automatically locked out of bedroom booking screens and redirected to their restriction ledger.
+* **Integrated Bulletin Board:** Displays real-time, priority-sorted administrative announcements directly on the main viewport dashboard.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 🛡️ JPK Administrative Suite
+* **Dynamic Header Layouts:** Session-driven navigation bars tracking individual admin identities (`ADMIN001`, `ADMIN002`, `ADMIN003`) across all control panel interfaces.
+* **Bulk Footprint Controllers:** Powerful administrative override deck enabling JPK supervisors to block or release entire floor levels or custom selections instantly.
+* **Audited Pass Revocations:** Active booking cancellations are supplemented with a required text reason log string for administrative transparency.
+* **Urgent Bulletin Broadcaster:** Allows administrators to publish, prioritize (`is_urgent`), or permanently expunge official notifications.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🛠️ Core Technology Stack
+* **Framework:** Laravel 10 / 11
+* **Frontend UI Engine:** Tailwind CSS via CDN integration
+* **Database Engine:** MySQL / MariaDB (via Eloquent Query Builder and Transaction Facades)
+* **Session Handler:** Native PHP Session Pool management
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## ⚙️ Installation & Workspace Setup
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 1. Repository Setup
+Clone the project repository to your local directory workspace and navigate into it:
+```bash
+git clone https://github.com/irfan-view/CSC577-Hostel-Booking.git
+cd CSC577-Hostel-Booking-main
